@@ -1,0 +1,38 @@
+bempong_chess_engine/
+│── engine/                 # Core chess engine logic
+│   ├── __init__.py
+│   ├── board.py             # Board representation & move generation
+│   ├── evaluation.py        # Position evaluation
+│   ├── move_suggestion.py   # AI-powered move suggestion
+│   ├── blunder_detection.py # Blunder detection system
+│   ├── stockfish_wrapper.py # Integrates Stockfish for analysis
+│
+│── api/                     # REST API (if needed)
+│   ├── __init__.py
+│   ├── server.py            # Flask/FastAPI backend
+│   ├── endpoints.py         # API endpoints for engine interactions
+│
+│── ui/                      # User Interface
+│   ├── cli.py               # Command-line interface
+│   ├── gui.py               # GUI (Tkinter, PyQt)
+│   ├── web/                 # Web-based UI (React.js)
+│
+│── tests/                   # Unit tests
+│   ├── test_engine.py
+│   ├── test_blunder.py
+│   ├── test_api.py
+│
+│── data/                    # Machine Learning datasets (if applicable)
+│   ├── training_data.csv
+│
+│── scripts/                 # Utility scripts
+│   ├── setup.py             # Setup script
+│   ├── train_model.py       # ML model training (if applicable)
+│
+│── docs/                    # Documentation
+│   ├── README.md
+│   ├── architecture.md
+│
+│── requirements.txt         # Python dependencies
+│── .gitignore               # Git ignore file
+│── main.py                  # Entry point of the project
