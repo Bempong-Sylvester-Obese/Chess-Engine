@@ -22,9 +22,9 @@ Bempong Chess Engine is a Python-based chess engine that evaluates positions, su
 ## Usage
 ### Initialize the Engine
 ```python
-from bempong_chess_engine import BempongChessEngine
+from bempong_chess_engine import ChessEngine
 
-engine = BempongChessEngine("path/to/stockfish")
+engine = ChessEngine("path/to/stockfish")
 ```
 
 ### Make a Move
