@@ -13,6 +13,7 @@
         "RQKB",
         "bqkbnr",
         "kppp",
+        "nrows",
         "pbnp",
         "pbppbp",
         "pknp",
@@ -27,6 +28,7 @@
         "qppp",
         "rbnkb",
         "rbqkbnr",
+        "rnbqkbnr",
         "stockfish"
     ],
     "cSpell.words": [
