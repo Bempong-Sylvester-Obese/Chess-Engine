@@ -8,8 +8,10 @@
         "QPBR",
         "QPPP",
         "RBQKBNR",
+        "RNBQKB",
         "RNQK",
         "RQKB",
+        "bqkbnr",
         "kppp",
         "pbnp",
         "pbppbp",
@@ -24,7 +26,8 @@
         "qbnr",
         "qppp",
         "rbnkb",
-        "rbqkbnr"
+        "rbqkbnr",
+        "stockfish"
     ],
     "cSpell.words": [
         "blit"
