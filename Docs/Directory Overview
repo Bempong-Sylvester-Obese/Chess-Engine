@@ -1,13 +1,13 @@
 chess_engine/
 │── Engine/                 # Core chess engine logic
-│   ├── _init_.py
+│   ├── __init__.py
 │   ├── board.py             # Board representation & move generation
 │   ├── evaluation.py        # Position evaluation
 │   ├── move_suggestion.py   # AI-powered move suggestion
-│   ├── blunder_detection_example.py # Example blunder detection
-│   ├── blunder_integration.py # Blunder detection integration
-│   ├── position_detection.py # Position detection system
-│   ├── stockfish_wrapper.py # Integrates Stockfish for analysis
+│   ├── chess_suggester.py   # Chess move suggestion implementation
+│   ├── test_chess_suggester.py # Tests for chess suggester
+│   ├── test_move_suggestion.py # Tests for move suggestion
+│   ├── simple_test.py       # Basic test file
 │
 │── API/                     # REST API (if needed)
 │   ├── __init__.py

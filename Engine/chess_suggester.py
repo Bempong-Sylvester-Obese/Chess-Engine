@@ -2,9 +2,7 @@
 
 import chess
 
-__all__ = ['MoveSuggester']
-
-class MoveSuggester:
+class ChessSuggester:
     def __init__(self):
         self.material_values = {
             chess.PAWN: 1.0,
@@ -71,7 +69,7 @@ class MoveSuggester:
 
 if __name__ == "__main__":
     board = chess.Board()
-    suggester = MoveSuggester()
+    suggester = ChessSuggester()
     suggestions = suggester.get_move_suggestions(board)
     
     print(f"Current evaluation: {suggestions['current_evaluation']:.2f}")
