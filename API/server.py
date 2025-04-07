@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .endpoints import router
+from API.endpoints import router
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
