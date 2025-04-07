@@ -3,7 +3,7 @@
 import chess
 import pygame
 import sys
-from typing import Optional
+from typing import Optional, List, Tuple
 from PIL import Image, ImageDraw
 
 class ChessGame:
@@ -20,6 +20,11 @@ class ChessGame:
         # Load chess piece images
         self.pieces = {}
         self.load_pieces()
+        
+        # Game state
+        self.selected_square = None
+        self.valid_moves = []
+        self.move_history = []
         
     def create_piece_image(self, color: str, piece_type: str) -> pygame.Surface:
         """Create a simple chess piece image."""
@@ -64,6 +69,36 @@ class ChessGame:
         for color in ['w', 'b']:
             for piece in ['P', 'R', 'N', 'B', 'Q', 'K']:
                 self.pieces[f"{color}{piece}"] = self.create_piece_image(color, piece)
+    
+    def get_square_from_pos(self, pos: Tuple[int, int]) -> Optional[int]:
+        """Convert screen coordinates to chess square index."""
+        x, y = pos
+        file_idx = x // self.square_size
+        rank_idx = 7 - (y // self.square_size)  # Flip because chess ranks are bottom-to-top
+        
+        if 0 <= file_idx < 8 and 0 <= rank_idx < 8:
+            return chess.square(file_idx, rank_idx)
+        return None
+    
+    def get_valid_moves(self, square: int) -> List[chess.Move]:
+        """Get all valid moves for a piece on the given square."""
+        valid_moves = []
+        for move in self.board.legal_moves:
+            if move.from_square == square:
+                valid_moves.append(move)
+        return valid_moves
+    
+    def highlight_square(self, square: int, color: Tuple[int, int, int, int] = (255, 255, 0, 128)):
+        """Highlight a square on the board."""
+        file_idx = chess.square_file(square)
+        rank_idx = 7 - chess.square_rank(square)  # Flip because chess ranks are bottom-to-top
+        
+        # Create a semi-transparent surface for highlighting
+        highlight = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
+        pygame.draw.rect(highlight, color, highlight.get_rect())
+        
+        # Draw the highlight
+        self.screen.blit(highlight, (file_idx * self.square_size, rank_idx * self.square_size))
         
     def draw_board(self):
         """Draw the chess board."""
@@ -88,17 +123,53 @@ class ChessGame:
                     piece_surface = self.pieces[piece_key]
                     self.screen.blit(piece_surface, 
                                    (col * self.square_size, row * self.square_size))
+        
+        # Highlight selected square
+        if self.selected_square is not None:
+            self.highlight_square(self.selected_square, (255, 255, 0, 128))  # Yellow highlight
+            
+            # Highlight valid moves
+            for move in self.valid_moves:
+                self.highlight_square(move.to_square, (0, 255, 0, 128))  # Green highlight
                 
     def handle_click(self, pos: tuple[int, int]) -> Optional[chess.Move]:
         """Handle mouse clicks and return a move if valid."""
-        x, y = pos
-        file_idx = x // self.square_size
-        rank_idx = 7 - (y // self.square_size)  # Flip because chess ranks are bottom-to-top
-        
-        if 0 <= file_idx < 8 and 0 <= rank_idx < 8:
-            square = chess.square(file_idx, rank_idx)
-            # TODO: Implement move selection logic
+        square = self.get_square_from_pos(pos)
+        if square is None:
             return None
+            
+        # If a square is already selected
+        if self.selected_square is not None:
+            # Check if the clicked square is a valid move
+            for move in self.valid_moves:
+                if move.to_square == square:
+                    # Make the move
+                    self.board.push(move)
+                    self.move_history.append(move)
+                    
+                    # Reset selection
+                    self.selected_square = None
+                    self.valid_moves = []
+                    return move
+                    
+            # If clicked on a different piece of the same color, select that piece instead
+            piece = self.board.piece_at(square)
+            if piece and piece.color == self.board.turn:
+                self.selected_square = square
+                self.valid_moves = self.get_valid_moves(square)
+                return None
+                
+            # If clicked elsewhere, deselect
+            self.selected_square = None
+            self.valid_moves = []
+            return None
+            
+        # If no square is selected, select the clicked square if it has a piece of the current player's color
+        piece = self.board.piece_at(square)
+        if piece and piece.color == self.board.turn:
+            self.selected_square = square
+            self.valid_moves = self.get_valid_moves(square)
+            
         return None
         
     def run(self):
@@ -109,9 +180,7 @@ class ChessGame:
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    move = self.handle_click(event.pos)
-                    if move and move in self.board.legal_moves:
-                        self.board.push(move)
+                    self.handle_click(event.pos)
             
             # Draw the current state
             self.draw_board()
