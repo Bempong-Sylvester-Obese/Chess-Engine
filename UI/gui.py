@@ -51,10 +51,13 @@ class ChessGUI:
         
     def load_pieces(self):
         """Load chess piece images."""
-        piece_chars = "prnbqkPRNBQK"
-        for piece in piece_chars:
+        piece_mapping = {
+            'p': 'bP', 'r': 'bR', 'n': 'bN', 'b': 'bB', 'q': 'bQ', 'k': 'bK',
+            'P': 'wP', 'R': 'wR', 'N': 'wN', 'B': 'wB', 'Q': 'wQ', 'K': 'wK'
+        }
+        for piece, filename in piece_mapping.items():
             try:
-                image = Image.open(f"assets/pieces/{piece}.png")
+                image = Image.open(f"assets/pieces/{filename}.png")
                 image = image.resize((50, 50), Image.Resampling.LANCZOS)
                 self.piece_images[piece] = ImageTk.PhotoImage(image)
             except Exception as e:
