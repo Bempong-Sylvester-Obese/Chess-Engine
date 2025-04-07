@@ -7,7 +7,7 @@ import sys
 import os
 import time
 
-# Add the parent directory to the path so we can import the engine modules
+# Add the parent directory to the path to import the engine modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester
