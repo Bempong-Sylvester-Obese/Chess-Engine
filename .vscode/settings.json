@@ -4,6 +4,7 @@
         "KBPP",
         "KPPP",
         "LANCZOS",
+        "MOUSEBUTTONDOWN",
         "PKQPPP",
         "PPPKQPPP",
         "QPBR",
@@ -12,6 +13,7 @@
         "RNBQKB",
         "RNQK",
         "RQKB",
+        "SRCALPHA",
         "bqkbnr",
         "kppp",
         "nrows",
@@ -33,6 +35,7 @@
         "rbqkbnr",
         "rnbqkbnr",
         "stockfish",
+        "tobytes",
         "xlim",
         "ylim"
     ],
