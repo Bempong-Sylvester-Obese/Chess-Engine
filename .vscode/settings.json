@@ -29,7 +29,9 @@
         "rbnkb",
         "rbqkbnr",
         "rnbqkbnr",
-        "stockfish"
+        "stockfish",
+        "xlim",
+        "ylim"
     ],
     "cSpell.words": [
         "blit"
