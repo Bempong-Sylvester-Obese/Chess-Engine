@@ -1,0 +1,9 @@
+chess_web_app/
+├── static/
+│   ├── chessboard.css
+│   ├── chessboard.js
+│   └── style.css
+├── templates/
+│   └── index.html
+├── app.py
+└── requirements.txt
