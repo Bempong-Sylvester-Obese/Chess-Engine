@@ -4,7 +4,7 @@ import unittest
 
 class TestBlunderDetection(unittest.TestCase):
     def setUp(self):
-        self.engine = chess.engine.SimpleEngine.popen_uci("/usr/local/bin/stockfish")
+        self.engine = chess.engine.SimpleEngine.popen_uci("/opt/homebrew/bin/stockfish")
 
     def tearDown(self):
         self.engine.quit()
