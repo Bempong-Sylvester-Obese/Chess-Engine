@@ -9,7 +9,7 @@ class TestBlunderDetection(unittest.TestCase):
     def tearDown(self):
         self.engine.quit()
 
-    def is_blunder(self, board, move, threshold=-2.0):
+    def is_blunder(self, board, move, threshold=-0.5):
         # Evaluate before move
         info_before = self.engine.analyse(board, chess.engine.Limit(time=0.1))
         score_before = info_before["score"].white().score(mate_score=10000)
