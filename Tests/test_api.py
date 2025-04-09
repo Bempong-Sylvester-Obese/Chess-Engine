@@ -1,5 +1,11 @@
+import sys
+import os
 from fastapi.testclient import TestClient
-from app import app  # your FastAPI app
+
+# Add parent directory to Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from app.main import app  # Adjusted import path
 
 client = TestClient(app)
 
@@ -15,10 +21,9 @@ def test_evaluate():
     }
     response = client.post("/evaluate", json=payload)
     assert response.status_code == 200
-    assert "blunder" in response.json()
+    assert "is_blunder" in response.json()
 
-if __name__ == "--main__":
+if __name__ == "__main__":
     test_status()
     test_evaluate()
-    print("All tests passed!")
-    
+    print("✅ All API tests passed!")
