@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/lib python3
 
 import chess
 from typing import List, Optional, Tuple
