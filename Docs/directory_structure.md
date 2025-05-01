@@ -2,6 +2,7 @@
 
 ```
 Chess-Engine/
+|-- .vscode                   #word dictionary to prevent spelling checker errors
 ├── API/                     # API-related code and endpoints
 ├── Data/                    # Data storage directory
 │   ├── plots/              # Generated visualization plots
