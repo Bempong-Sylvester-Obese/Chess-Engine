@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/lib python3
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel

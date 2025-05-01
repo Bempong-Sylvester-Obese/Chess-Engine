@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/opt/homebrew/lib python3
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
