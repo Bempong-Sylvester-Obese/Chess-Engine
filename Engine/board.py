@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import chess
 from typing import List, Optional, Tuple
 from .evaluation import evaluate_position, get_best_move
