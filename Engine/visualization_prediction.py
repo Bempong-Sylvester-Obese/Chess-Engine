@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-# Replace these with actual predictions and labels
+# actual predictions and labels
 y_true = [1.2, -0.5, 0.0, 3.1, -2.3, 1.5, 0.7]
 y_pred = [1.0, -0.1, -0.3, 2.5, -1.7, 2.1, 1.0]
 
