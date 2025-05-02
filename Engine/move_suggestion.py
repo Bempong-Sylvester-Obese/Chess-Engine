@@ -1,9 +1,6 @@
 #!/opt/homebrew/lib python3
-
 import chess
-
 __all__ = ['MoveSuggester']
-
 class MoveSuggester:
     def __init__(self):
         self.material_values = {
