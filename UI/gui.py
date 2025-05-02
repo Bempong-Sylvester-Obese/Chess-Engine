@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 import chess

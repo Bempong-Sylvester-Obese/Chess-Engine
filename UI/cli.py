@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import chess
 import sys
 from typing import Optional, List
