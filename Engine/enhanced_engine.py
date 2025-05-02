@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import chess
 import pickle
 import numpy as np
