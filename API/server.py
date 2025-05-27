@@ -1,7 +1,7 @@
-#!/opt/homebrew/lib python3
+#!/usr/bin/env python3
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from API.endpoints import router
+from endpoints import router
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
