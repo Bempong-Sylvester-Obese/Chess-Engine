@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import os
 from Engine.board import Board
 from Engine.evaluation import evaluate_position, get_best_move
+from API.endpoints import router
 
 class ChessGUI:
     def __init__(self, root):
