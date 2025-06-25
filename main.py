@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import chess
 import pygame
 import sys
@@ -27,7 +26,6 @@ class ChessGame:
         self.move_history = []
         
     def create_piece_image(self, color: str, piece_type: str) -> pygame.Surface:
-        """Create a simple chess piece image."""
         size = self.square_size
         image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
         draw = ImageDraw.Draw(image)
@@ -65,13 +63,11 @@ class ChessGame:
         return py_image
         
     def load_pieces(self):
-        """Load chess piece images."""
         for color in ['w', 'b']:
             for piece in ['P', 'R', 'N', 'B', 'Q', 'K']:
                 self.pieces[f"{color}{piece}"] = self.create_piece_image(color, piece)
     
     def get_square_from_pos(self, pos: Tuple[int, int]) -> Optional[int]:
-        """Convert screen coordinates to chess square index."""
         x, y = pos
         file_idx = x // self.square_size
         rank_idx = 7 - (y // self.square_size)  # Flip because chess ranks are bottom-to-top
@@ -81,7 +77,6 @@ class ChessGame:
         return None
     
     def get_valid_moves(self, square: int) -> List[chess.Move]:
-        """Get all valid moves for a piece on the given square."""
         valid_moves = []
         for move in self.board.legal_moves:
             if move.from_square == square:
@@ -89,7 +84,6 @@ class ChessGame:
         return valid_moves
     
     def highlight_square(self, square: int, color: Tuple[int, int, int, int] = (255, 255, 0, 128)):
-        """Highlight a square on the board."""
         file_idx = chess.square_file(square)
         rank_idx = 7 - chess.square_rank(square)  # Flip because chess ranks are bottom-to-top
         
@@ -101,7 +95,6 @@ class ChessGame:
         self.screen.blit(highlight, (file_idx * self.square_size, rank_idx * self.square_size))
         
     def draw_board(self):
-        """Draw the chess board."""
         for row in range(8):
             for col in range(8):
                 # Calculate square color
@@ -133,7 +126,6 @@ class ChessGame:
                 self.highlight_square(move.to_square, (0, 255, 0, 128))  # Green highlight
                 
     def handle_click(self, pos: tuple[int, int]) -> Optional[chess.Move]:
-        """Handle mouse clicks and return a move if valid."""
         square = self.get_square_from_pos(pos)
         if square is None:
             return None
@@ -173,7 +165,6 @@ class ChessGame:
         return None
         
     def run(self):
-        """Main game loop."""
         running = True
         while running:
             for event in pygame.event.get():
