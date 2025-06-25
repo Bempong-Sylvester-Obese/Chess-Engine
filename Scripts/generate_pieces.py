@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-
 from PIL import Image, ImageDraw
 import os
 
 def create_piece_image(piece_type, color, size=50):
-    """Create a simple chess piece image with improved design."""
     # Create a new image with transparency
     image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
@@ -109,15 +107,12 @@ def create_piece_image(piece_type, color, size=50):
     return image
 
 def generate_all_pieces():
-    """Generate all chess piece images."""
-    # Create output directory if it doesn't exist
     output_dir = "assets/pieces"
     os.makedirs(output_dir, exist_ok=True)
     
     # Generate pieces for both colors
     for color in ['w', 'b']:
         for piece in ['P', 'R', 'N', 'B', 'Q', 'K']:
-            # Create the image
             image = create_piece_image(piece, color)
             
             # Save the image

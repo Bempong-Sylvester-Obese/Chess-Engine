@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import chess
 import random
 import csv
@@ -7,7 +6,6 @@ from datetime import datetime
 import numpy as np
 
 def generate_synthetic_game():
-    """Generate a synthetic chess game with realistic moves and evaluations."""
     board = chess.Board()
     game_data = []
     
@@ -98,7 +96,6 @@ def generate_synthetic_game():
     return game_data
 
 def generate_dataset(num_games=1000):
-    """Generate a dataset of synthetic chess games."""
     all_data = []
     
     for _ in range(num_games):
@@ -108,7 +105,6 @@ def generate_dataset(num_games=1000):
     return all_data
 
 def save_to_csv(data, filename='Data/training_data.csv'):
-    """Save the generated data to a CSV file."""
     fieldnames = ['position_fen', 'move_played', 'move_evaluation', 
                  'position_evaluation', 'game_outcome', 'player_rating', 
                  'time_control', 'opening_name']

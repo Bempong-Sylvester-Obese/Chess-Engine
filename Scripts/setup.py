@@ -1,5 +1,4 @@
 #!/opt/homebrew/lib python3
-
 import os
 import sys
 import subprocess
@@ -7,19 +6,16 @@ import platform
 from pathlib import Path
 
 def check_python_version():
-    """Check if Python version is compatible."""
     if sys.version_info < (3, 8):
         print("Error: Python 3.8 or higher is required")
         sys.exit(1)
 
 def create_virtual_env():
-    """Create and activate virtual environment."""
     venv_path = Path("venv")
     if not venv_path.exists():
         print("Creating virtual environment...")
         subprocess.run([sys.executable, "-m", "venv", "venv"])
         
-    # Determine the activation script path
     if platform.system() == "Windows":
         activate_script = venv_path / "Scripts" / "activate.bat"
     else:
@@ -33,12 +29,10 @@ def create_virtual_env():
     print(f"To activate, run: source {activate_script}")
 
 def install_dependencies():
-    """Install project dependencies."""
     print("Installing dependencies...")
     subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
 
 def check_stockfish():
-    """Check if Stockfish is installed and accessible."""
     try:
         import chess.engine
         engine = chess.engine.SimpleEngine.popen_uci("stockfish")
@@ -55,19 +49,11 @@ def check_stockfish():
             print("  Download from https://stockfishchess.org/download/")
 
 def main():
-    """Main setup function."""
     print("Setting up Chess Engine project...")
     
-    # Check Python version
     check_python_version()
-    
-    # Create virtual environment
     create_virtual_env()
-    
-    # Install dependencies
     install_dependencies()
-    
-    # Check Stockfish
     check_stockfish()
     
     print("\nSetup completed successfully!")

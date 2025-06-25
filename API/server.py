@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from endpoints import router
 
 def create_app() -> FastAPI:
-    """Create and configure the FastAPI application."""
     app = FastAPI(
         title="Chess Engine API",
         description="REST API for chess engine operations",

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,14 +8,13 @@ import chess
 import sys
 import os
 
-# Add the parent directory to the path so we can import the engine modules
+# Add the parent directory to the path to import the engine modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
 
 def load_training_data(file_path='Data/training_data.csv'):
-    """Load the training data from CSV."""
     try:
         data = pd.read_csv(file_path)
         print(f"Loaded {len(data)} positions from training data")
@@ -26,7 +24,6 @@ def load_training_data(file_path='Data/training_data.csv'):
         return None
 
 def analyze_openings(data):
-    """Analyze the openings in the training data."""
     if data is None or 'opening_name' not in data.columns:
         print("No opening data available")
         return
@@ -47,7 +44,6 @@ def analyze_openings(data):
         print(f"{opening}: {count} positions")
 
 def analyze_evaluations(data):
-    """Analyze the position and move evaluations in the training data."""
     if data is None:
         return
     
@@ -70,7 +66,6 @@ def analyze_evaluations(data):
     print(f"Max: {data['position_evaluation'].max():.2f}")
 
 def analyze_game_outcomes(data):
-    """Analyze the game outcomes in the training data."""
     if data is None or 'game_outcome' not in data.columns:
         print("No game outcome data available")
         return
@@ -89,7 +84,6 @@ def analyze_game_outcomes(data):
         print(f"{outcome}: {count} games ({count/len(data)*100:.1f}%)")
 
 def analyze_player_ratings(data):
-    """Analyze the player ratings in the training data."""
     if data is None or 'player_rating' not in data.columns:
         print("No player rating data available")
         return
@@ -111,7 +105,6 @@ def analyze_player_ratings(data):
     print(f"Max: {data['player_rating'].max():.1f}")
 
 def compare_engine_with_training_data(data):
-    """Compare the engine's evaluations with the training data evaluations."""
     if data is None:
         return
     
@@ -147,7 +140,6 @@ def compare_engine_with_training_data(data):
     plt.close()
 
 def main():
-    """Main function to analyze the training data."""
     print("Analyzing chess training data...")
     
     # Load the data

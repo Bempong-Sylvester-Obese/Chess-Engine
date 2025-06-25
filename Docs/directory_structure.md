@@ -42,23 +42,6 @@ Chess-Engine/
 └── requirements.txt        # Project dependencies
 ```
 
-## Recent Updates
-
-1. Added new scripts in the Scripts directory:
-   - `integrate_model.py`: Integrates trained ML model with chess engine
-   - `visualize_analysis.py`: Generates visualizations for data analysis
-   - `run_pipeline.py`: Automates the entire pipeline process
-
-2. Enhanced the Data directory:
-   - Added `plots/` subdirectory for storing generated visualizations
-   - Contains training data in `training_data.csv`
-
-3. Added new engine component:
-   - `enhanced_engine.py`: Implements ML-enhanced chess engine
-
-4. Added VS Code configuration:
-   - `.vscode/` directory for editor-specific settings
-
 ## Directory Descriptions
 
 - **API/**: Contains API-related code for external integrations

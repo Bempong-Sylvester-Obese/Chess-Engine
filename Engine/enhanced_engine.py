@@ -5,13 +5,12 @@ import numpy as np
 import sys
 import os
 
-# Add the parent directory to the path so we can import the engine modules
+# Add the parent directory to the path to import the engine modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester
 
 def extract_features(board):
-    """Extract features from a chess position for the trained model."""
     features = []
     
     # Material count for each piece type
@@ -81,7 +80,6 @@ def extract_features(board):
     return np.array(features)
 
 def load_model(file_path='Data/trained_model.pkl'):
-    """Load the trained model from a file."""
     try:
         with open(file_path, 'rb') as f:
             model = pickle.load(f)
@@ -92,16 +90,13 @@ def load_model(file_path='Data/trained_model.pkl'):
         return None
 
 class EnhancedChessSuggester(ChessSuggester):
-    """Enhanced chess suggester that uses the trained model for evaluation."""
     
     def __init__(self, model_path='Data/trained_model.pkl'):
-        """Initialize the enhanced chess suggester."""
         super().__init__()
         self.model = load_model(model_path)
         self.use_model = self.model is not None
     
     def evaluate_position(self, board):
-        """Evaluate a position using the trained model if available."""
         if board.is_game_over():
             if board.is_checkmate():
                 return -10000.0 if board.turn else 10000.0
@@ -122,7 +117,6 @@ class EnhancedChessSuggester(ChessSuggester):
             return super().evaluate_position(board)
     
     def suggest_moves(self, board):
-        """Suggest moves using the enhanced evaluation function."""
         if board.is_game_over():
             return []
         
@@ -137,7 +131,6 @@ class EnhancedChessSuggester(ChessSuggester):
         return moves[:5]
     
     def get_move_suggestions(self, board):
-        """Get move suggestions with enhanced evaluation."""
         current_eval = self.evaluate_position(board)
         move_suggestions = self.suggest_moves(board)
         

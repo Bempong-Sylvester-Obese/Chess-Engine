@@ -1,7 +1,6 @@
 import chess
 import chess.engine
 import unittest
-
 class TestBlunderDetection(unittest.TestCase):
     def setUp(self):
         self.engine = chess.engine.SimpleEngine.popen_uci("/opt/homebrew/bin/stockfish")
@@ -13,9 +12,7 @@ class TestBlunderDetection(unittest.TestCase):
         self.engine.quit()
 
     def is_blunder(self, board, move):
-        """Ultra-reliable blunder detection"""
-        # Get evaluation before move
-        info_before = self.engine.analyse(board, self.analysis_limit)
+        info_before = self.engine.analyse(board, self.analysis_limit) #evaluate before the move
         score_before = info_before["score"].white().score(mate_score=10000)
         
         # Make the move and evaluate
@@ -39,13 +36,9 @@ class TestBlunderDetection(unittest.TestCase):
         return (eval_diff < self.threshold) and (move not in top_moves)
 
     def test_castling_not_blunder(self):
-        """Test that castling is never flagged as a blunder"""
-        # Position where castling is clearly best
-        board = chess.Board("r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 6")
+        board = chess.Board("r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 6") #position with castling available
         castling_move = chess.Move.from_uci("e1g1")
-        
-        # Verify with Stockfish
-        result = self.engine.play(board, self.analysis_limit)
+        result = self.engine.play(board, self.analysis_limit) #stock fish verification
         print(f"Stockfish recommends: {result.move}")
         
         self.assertFalse(
@@ -55,7 +48,6 @@ class TestBlunderDetection(unittest.TestCase):
         )
 
 if __name__ == "__main__":
-    # Create test suite and add celebration
     suite = unittest.TestLoader().loadTestsFromTestCase(TestBlunderDetection)
     runner = unittest.TextTestRunner()
     result = runner.run(suite)

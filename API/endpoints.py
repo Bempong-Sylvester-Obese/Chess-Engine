@@ -21,7 +21,6 @@ class GameState(BaseModel):
 
 @router.post("/move")
 async def make_move(move_request: MoveRequest):
-    """Make a move on the board."""
     try:
         move = chess.Move.from_uci(move_request.move)
         if board.make_move(move):
@@ -33,7 +32,6 @@ async def make_move(move_request: MoveRequest):
 
 @router.get("/state")
 async def get_state():
-    """Get the current game state."""
     return GameState(
         fen=board.get_fen(),
         is_game_over=board.is_game_over(),
@@ -44,7 +42,6 @@ async def get_state():
 
 @router.get("/best-move")
 async def get_best_move(depth: int = 15):
-    """Get the best move in the current position."""
     move, score = get_best_move(board.board, depth)
     return {
         "move": move.uci(),
@@ -53,6 +50,5 @@ async def get_best_move(depth: int = 15):
 
 @router.post("/reset")
 async def reset_game():
-    """Reset the game to the initial position."""
     board = Board()
     return {"status": "success", "fen": board.get_fen()}

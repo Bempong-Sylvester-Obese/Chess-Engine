@@ -20,7 +20,6 @@ class PositionEvaluator:
         self.initialize_engine()
         
     def initialize_engine(self):
-        """Initialize the Stockfish engine if available."""
         try:
             # Try to find Stockfish in common locations
             stockfish_paths = [
@@ -41,7 +40,6 @@ class PositionEvaluator:
             print("Using simple evaluation instead.")
             
     def material_evaluation(self, board: chess.Board) -> float:
-        """Simple material-based position evaluation."""
         if board.is_checkmate():
             return -20000 if board.turn else 20000
             
@@ -55,7 +53,6 @@ class PositionEvaluator:
         return score / 100.0  # Convert centipawns to pawns
         
     def evaluate_position(self, board: chess.Board, depth: int = 15) -> float:
-        """Evaluate the current position using Stockfish if available."""
         if self.engine is not None:
             try:
                 result = self.engine.analyse(board, chess.engine.Limit(depth=depth))
@@ -67,7 +64,6 @@ class PositionEvaluator:
             return self.material_evaluation(board)
             
     def get_best_move(self, board: chess.Board, depth: int = 15) -> Tuple[chess.Move, float]:
-        """Get the best move in the position using Stockfish if available."""
         if self.engine is not None:
             try:
                 result = self.engine.play(board, chess.engine.Limit(depth=depth))
@@ -79,13 +75,12 @@ class PositionEvaluator:
             return self.get_simple_best_move(board)
             
     def get_simple_best_move(self, board: chess.Board) -> Tuple[chess.Move, float]:
-        """Get the best move using simple evaluation."""
         best_move = None
         best_score = float('-inf')
         
         for move in board.legal_moves:
             board.push(move)
-            score = -self.material_evaluation(board)  # Negate because we're evaluating from opponent's perspective
+            score = -self.material_evaluation(board)  # Negate because of evaluation from opponent's perspective
             board.pop()
             
             if score > best_score:
@@ -95,7 +90,6 @@ class PositionEvaluator:
         return best_move, -best_score  # Negate again to get score from current player's perspective
         
     def __del__(self):
-        """Clean up the engine when the evaluator is destroyed."""
         if self.engine is not None:
             self.engine.quit()
 
@@ -103,9 +97,7 @@ class PositionEvaluator:
 evaluator = PositionEvaluator()
 
 def evaluate_position(board: chess.Board, depth: int = 15) -> float:
-    """Evaluate the current position."""
     return evaluator.evaluate_position(board, depth)
 
 def get_best_move(board: chess.Board, depth: int = 15) -> Tuple[chess.Move, float]:
-    """Get the best move in the position."""
     return evaluator.get_best_move(board, depth) 
