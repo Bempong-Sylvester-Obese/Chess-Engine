@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -8,7 +7,6 @@ import chess
 import sys
 import os
 
-# Add the parent directory to the path to import the engine modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester

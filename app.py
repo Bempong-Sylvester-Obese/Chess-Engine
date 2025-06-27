@@ -11,6 +11,8 @@ def index():
 @app.route('/move', methods=['POST'])
 def move():
     global board
+    if not request.is_json or request.json is None:
+        return jsonify({'status': 'error', 'message': 'Invalid or missing JSON'}), 400
     move_uci = request.json.get('move')
     move = chess.Move.from_uci(move_uci)
 

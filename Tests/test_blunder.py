@@ -13,15 +13,17 @@ class TestBlunderDetection(unittest.TestCase):
 
     def is_blunder(self, board, move):
         info_before = self.engine.analyse(board, self.analysis_limit) #evaluate before the move
-        score_before = info_before["score"].white().score(mate_score=10000)
+        score_obj_before = info_before.get("score")
+        score_before = score_obj_before.white().score(mate_score=10000) if score_obj_before is not None else None
         
         # Make the move and evaluate
         board.push(move)
         info_after = self.engine.analyse(board, self.analysis_limit)
-        score_after = info_after["score"].white().score(mate_score=10000)
+        score_obj_after = info_after.get("score")
+        score_after = score_obj_after.white().score(mate_score=10000) if score_obj_after is not None else None
         board.pop()
 
-        if None in (score_before, score_after):
+        if score_before is None or score_after is None:
             return False
 
         eval_diff = (score_after - score_before)/100  # Convert to pawns
@@ -29,7 +31,7 @@ class TestBlunderDetection(unittest.TestCase):
         
         # Get top engine moves
         analysis = self.engine.analyse(board, self.analysis_limit, multipv=self.multipv)
-        top_moves = [line["pv"][0] for line in analysis]
+        top_moves = [line["pv"][0] for line in analysis if "pv" in line and line["pv"]]
         print(f"Top {self.multipv} moves: {top_moves}")
         
         # Only blunder if both conditions met:

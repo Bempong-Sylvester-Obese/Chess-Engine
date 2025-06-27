@@ -1,4 +1,3 @@
-#!/opt/homebrew/lib python3
 import chess
 from move_suggestion import MoveSuggester
 

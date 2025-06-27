@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import unittest
 import chess
 import pandas as pd
@@ -10,13 +9,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
-from Engine.move_suggestion import suggest_moves
+from Engine.move_suggestion import MoveSuggester
 
 class TestChessEngine(unittest.TestCase):
     
     def setUp(self):
         self.board = chess.Board()
         self.suggester = ChessSuggester()
+        self.move_suggester = MoveSuggester()
         
         try:
             self.training_data = pd.read_csv('Data/training_data.csv', nrows=100)
@@ -40,7 +40,7 @@ class TestChessEngine(unittest.TestCase):
         self.assertLess(eval_score, 0)  # Black should be better
     
     def test_move_suggestions(self):
-        suggestions = suggest_moves(self.board)
+        suggestions = self.move_suggester.suggest_moves(self.board)
         self.assertIsInstance(suggestions, list)
         self.assertGreater(len(suggestions), 0)
         for move, eval_score, comment in suggestions:
@@ -68,8 +68,8 @@ class TestChessEngine(unittest.TestCase):
         
         for _, row in self.training_data.head(5).iterrows():
             try:
-                board = chess.Board(row['position_fen'])
-                suggestions = suggest_moves(board)
+                board = chess.Board(str(row['position_fen']))
+                suggestions = self.move_suggester.suggest_moves(board)
                 self.assertGreater(len(suggestions), 0)
                 eval_score = evaluate_position(board)
                 self.assertIsInstance(eval_score, float)

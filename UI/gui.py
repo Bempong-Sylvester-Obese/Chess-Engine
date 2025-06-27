@@ -1,5 +1,3 @@
-#!/opt/homebrew/lib python3
-
 import tkinter as tk
 from tkinter import ttk, messagebox
 import chess
@@ -21,7 +19,7 @@ class ChessGUI:
         
         # Create main frame
         self.main_frame = ttk.Frame(root, padding="10")
-        self.main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        self.main_frame.grid(row=0, column=0, sticky="nsew")
         
         # Create board canvas
         self.canvas = tk.Canvas(self.main_frame, width=400, height=400)
@@ -169,7 +167,10 @@ class ChessGUI:
         """Show the best move in the current position."""
         if not self.board.is_game_over():
             move, score = self.board.get_best_move()
-            messagebox.showinfo("Best Move", f"Best move: {move.uci()}\nEvaluation: {score:+.2f}")
+            if move is not None:
+                messagebox.showinfo("Best Move", f"Best move: {move.uci()}\nEvaluation: {score:+.2f}")
+            else:
+                messagebox.showinfo("Best Move", "No legal moves available.")
             
     def update_evaluation(self):
         """Update the position evaluation display."""

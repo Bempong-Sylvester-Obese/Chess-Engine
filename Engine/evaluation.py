@@ -1,4 +1,3 @@
-#!/opt/homebrew/lib python3
 import chess
 import chess.engine
 from typing import Optional, Tuple

@@ -1,4 +1,3 @@
-#!/opt/homebrew/lib python3
 import chess
 __all__ = ['MoveSuggester']
 class MoveSuggester:

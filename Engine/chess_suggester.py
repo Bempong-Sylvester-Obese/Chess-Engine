@@ -1,4 +1,3 @@
-#!/opt/homebrew/lib python3
 import chess
 class ChessSuggester:
     def __init__(self):

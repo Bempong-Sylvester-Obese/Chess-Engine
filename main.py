@@ -1,8 +1,7 @@
-#!/opt/homebrew/lib python3
 import chess
 import pygame
 import sys
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, cast, Literal
 from PIL import Image, ImageDraw
 
 class ChessGame:
@@ -56,10 +55,11 @@ class ChessGame:
             draw.rectangle([size//2-5, size//6, size//2+5, size//4], fill=(255, 0, 0))
         
         # Convert PIL image to Pygame surface
-        mode = image.mode
+        valid_modes = {'P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA'}
+        mode = image.mode if image.mode in valid_modes else 'RGBA'
         size = image.size
         data = image.tobytes()
-        py_image = pygame.image.fromstring(data, size, mode)
+        py_image = pygame.image.fromstring(data, size, cast(Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA'], mode))
         return py_image
         
     def load_pieces(self):

@@ -1,17 +1,15 @@
 import sys
 import os
-from fastapi.testclient import TestClient
+from app import app
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from app.main import app  # Adjusted import path
-
-client = TestClient(app)
+client = app.test_client()
 
 def test_status():
     response = client.get("/status")
     assert response.status_code == 200
-    assert response.json()["status"] == "ok"
+    assert response.get_json()["status"] == "ok"
 
 def test_evaluate():
     payload = {
@@ -20,7 +18,7 @@ def test_evaluate():
     }
     response = client.post("/evaluate", json=payload)
     assert response.status_code == 200
-    assert "is_blunder" in response.json()
+    assert "is_blunder" in response.get_json()
 
 if __name__ == "__main__":
     test_status()

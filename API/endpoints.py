@@ -1,10 +1,9 @@
-#!/opt/homebrew/lib python3
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 import chess
 from Engine.board import Board
-from Engine.evaluation import evaluate_position, get_best_move
+from Engine.evaluation import evaluate_position, get_best_move as engine_get_best_move
 
 router = APIRouter()
 board = Board()
@@ -41,8 +40,10 @@ async def get_state():
     )
 
 @router.get("/best-move")
-async def get_best_move(depth: int = 15):
-    move, score = get_best_move(board.board, depth)
+async def get_best_move_endpoint(depth: int = 15):
+    move, score = engine_get_best_move(board.board, depth)
+    if move is None:
+        raise HTTPException(status_code=404, detail="No legal moves available")
     return {
         "move": move.uci(),
         "evaluation": score

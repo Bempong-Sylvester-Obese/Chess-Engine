@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import chess
 import pickle
 import numpy as np
@@ -10,7 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
-from Engine.move_suggestion import suggest_moves
+from Engine.move_suggestion import MoveSuggester
 
 def extract_features(board):
     features = []
@@ -104,7 +103,7 @@ class EnhancedChessSuggester(ChessSuggester):
                 return -10000.0 if board.turn else 10000.0
             return 0.0
         
-        if self.use_model:
+        if self.use_model and self.model is not None and hasattr(self.model, 'predict'):
             # Extract features and use the model
             features = extract_features(board)
             model_eval = self.model.predict([features])[0]

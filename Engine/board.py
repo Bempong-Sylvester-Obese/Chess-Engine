@@ -1,4 +1,3 @@
-#!/opt/homebrew/lib python3
 import chess
 from typing import List, Optional, Tuple
 from .evaluation import evaluate_position, get_best_move
@@ -52,7 +51,7 @@ class Board:
     def get_evaluation(self, depth: int = 15) -> float:
         return evaluate_position(self.board, depth)
         
-    def get_best_move(self, depth: int = 15) -> Tuple[chess.Move, float]:
+    def get_best_move(self, depth: int = 15) -> Tuple[Optional[chess.Move], float]:
         return get_best_move(self.board, depth)
         
     def is_check(self) -> bool:
