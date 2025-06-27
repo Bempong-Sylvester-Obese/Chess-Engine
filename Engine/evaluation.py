@@ -56,14 +56,24 @@ class PositionEvaluator:
         if self.engine is not None:
             try:
                 result = self.engine.analyse(board, chess.engine.Limit(depth=depth))
-                return result["score"].relative.score() / 100.0
+                score_obj = result.get("score")
+                if score_obj is not None:
+                    score_value = score_obj.relative.score()
+                    if score_value is not None:
+                        return score_value / 100.0
+                    else:
+                        print("Warning: score_obj.relative.score() is None, using material evaluation.")
+                        return self.material_evaluation(board)
+                else:
+                    print("Warning: No score in engine result, using material evaluation.")
+                    return self.material_evaluation(board)
             except Exception as e:
                 print(f"Warning: Stockfish evaluation failed: {e}")
                 return self.material_evaluation(board)
         else:
             return self.material_evaluation(board)
             
-    def get_best_move(self, board: chess.Board, depth: int = 15) -> Tuple[chess.Move, float]:
+    def get_best_move(self, board: chess.Board, depth: int = 15) -> Tuple[Optional[chess.Move], float]:
         if self.engine is not None:
             try:
                 result = self.engine.play(board, chess.engine.Limit(depth=depth))
@@ -74,7 +84,7 @@ class PositionEvaluator:
         else:
             return self.get_simple_best_move(board)
             
-    def get_simple_best_move(self, board: chess.Board) -> Tuple[chess.Move, float]:
+    def get_simple_best_move(self, board: chess.Board) -> Tuple[Optional[chess.Move], float]:
         best_move = None
         best_score = float('-inf')
         
@@ -99,5 +109,5 @@ evaluator = PositionEvaluator()
 def evaluate_position(board: chess.Board, depth: int = 15) -> float:
     return evaluator.evaluate_position(board, depth)
 
-def get_best_move(board: chess.Board, depth: int = 15) -> Tuple[chess.Move, float]:
+def get_best_move(board: chess.Board, depth: int = 15) -> Tuple[Optional[chess.Move], float]:
     return evaluator.get_best_move(board, depth) 
