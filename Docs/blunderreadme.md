@@ -29,7 +29,6 @@ pip install python-chess
    - Download from [Stockfish website](https://stockfishchess.org/download/)
    - Add it to your system PATH or specify the path when initializing the BlunderDetector
 
-## Usage
 
 ### Basic Usage
 
@@ -90,7 +89,7 @@ print(analysis)
 Run the example script to see blunder detection in action:
 
 ```bash
-python blunder_detection_example.py
+python test_blunder.py
 ```
 
 ## How It Works

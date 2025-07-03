@@ -2,13 +2,8 @@ import chess
 from move_suggestion import MoveSuggester
 
 def main():
-    # Create a chess board
     board = chess.Board()
-    
-    # Create the move suggester
     suggester = MoveSuggester()
-    
-    # Get move suggestions
     suggestions = suggester.get_move_suggestions(board)
     
     # Print the suggestions

@@ -34,7 +34,7 @@ def run_script(script_name, description):
 
 def main():
     print("Starting Chess Engine Training Pipeline")
-    print("==========================")
+    print("==========")
     
     if not run_script("Scripts/generate_synthetic_data.py", "Generating synthetic chess training data"):
         print("Failed to generate synthetic data. Aborting pipeline.")
