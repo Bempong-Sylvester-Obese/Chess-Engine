@@ -35,7 +35,6 @@ chess_engine/
 │   ├── README.md
 │   ├── Directory Overview
 │
-│── assets/                  # Project assets and resources
 │
 │── venv/                    # Python virtual environment
 │

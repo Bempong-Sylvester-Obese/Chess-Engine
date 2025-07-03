@@ -32,7 +32,6 @@ Chess-Engine/
 │   └── visualize_analysis.py       # Data visualization
 ├── Tests/                   # Test files and test suites
 ├── UI/                      # User interface components
-├── assets/                  # Static assets (images, etc.)
 ├── .vscode/                 # VS Code configuration files
 ├── venv/                    # Python virtual environment
 ├── .git/                    # Git repository data
@@ -51,7 +50,6 @@ Chess-Engine/
 - **Scripts/**: Utility scripts for various tasks
 - **Tests/**: Test suites and test cases
 - **UI/**: User interface components
-- **assets/**: Static resources
 - **.vscode/**: VS Code editor configuration
 - **venv/**: Python virtual environment
 - **.git/**: Git version control data
