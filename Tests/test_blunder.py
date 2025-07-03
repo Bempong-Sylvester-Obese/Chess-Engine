@@ -1,6 +1,7 @@
 import chess
 import chess.engine
 import unittest
+
 class TestBlunderDetection(unittest.TestCase):
     def setUp(self):
         self.engine = chess.engine.SimpleEngine.popen_uci("/opt/homebrew/bin/stockfish")

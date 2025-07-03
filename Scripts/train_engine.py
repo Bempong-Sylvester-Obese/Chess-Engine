@@ -97,7 +97,6 @@ def prepare_training_data(data, max_samples=10000):
     return np.array(X), np.array(y)
 
 def train_model(X, y):
-    """Train a linear regression model on the features."""
     X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
     
     model = LinearRegression()

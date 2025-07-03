@@ -6,6 +6,7 @@ import os
 from Engine.board import Board
 from Engine.evaluation import evaluate_position, get_best_move
 from API.endpoints import router
+import pathlib
 
 class ChessGUI:
     def __init__(self, root):
@@ -57,24 +58,26 @@ class ChessGUI:
         self.draw_board()
         
     def load_pieces(self):
-        """Load chess piece images."""
-        piece_mapping = {
-            'p': 'bP', 'r': 'bR', 'n': 'bN', 'b': 'bB', 'q': 'bQ', 'k': 'bK',
-            'P': 'wP', 'R': 'wR', 'N': 'wN', 'B': 'wB', 'Q': 'wQ', 'K': 'wK'
+        """Load chess piece images from chessboardjs-1 set."""
+        piece_image_map = {
+            'P': 'wP.png', 'N': 'wN.png', 'B': 'wB.png', 'R': 'wR.png', 'Q': 'wQ.png', 'K': 'wK.png',
+            'p': 'bP.png', 'n': 'bN.png', 'b': 'bB.png', 'r': 'bR.png', 'q': 'bQ.png', 'k': 'bK.png',
         }
-        for piece, filename in piece_mapping.items():
+        # Get absolute path to the image directory
+        base_path = pathlib.Path(__file__).parent / 'chesswebapp' / 'static' / 'chessboardjs-1' / 'img' / 'chesspieces' / 'wikipedia'
+        for symbol, filename in piece_image_map.items():
             try:
-                image = Image.open(f"assets/pieces/{filename}.png")
+                image_path = (base_path / filename).resolve()
+                print(f"Trying to load: {image_path}")  # Debug print
+                image = Image.open(image_path)
                 image = image.resize((50, 50), Image.Resampling.LANCZOS)
-                self.piece_images[piece] = ImageTk.PhotoImage(image)
+                self.piece_images[symbol] = ImageTk.PhotoImage(image)
             except Exception as e:
-                print(f"Error loading piece image {piece}: {e}")
-                # Create a simple colored rectangle as fallback
-                img = Image.new('RGB', (50, 50), 'white' if piece.isupper() else 'black')
-                self.piece_images[piece] = ImageTk.PhotoImage(img)
+                print(f"Error loading piece image {symbol} from {image_path}: {e}")
+                img = Image.new('RGB', (50, 50), 'red')  # Red fallback for visibility
+                self.piece_images[symbol] = ImageTk.PhotoImage(img)
                 
     def draw_board(self):
-        """Draw the chess board and pieces."""
         self.canvas.delete("all")
         
         # Draw squares
@@ -93,9 +96,9 @@ class ChessGUI:
                 rank_idx = 7 - chess.square_rank(square)
                 x = file_idx * 50
                 y = rank_idx * 50
-                piece_char = piece.symbol()
-                if piece_char in self.piece_images:
-                    self.canvas.create_image(x, y, image=self.piece_images[piece_char], anchor=tk.NW)
+                symbol = piece.symbol()
+                if symbol in self.piece_images:
+                    self.canvas.create_image(x, y, image=self.piece_images[symbol], anchor=tk.NW)
                     
         # Highlight selected square and valid moves
         if self.selected_square is not None:
@@ -113,7 +116,6 @@ class ChessGUI:
                 self.canvas.create_rectangle(x1, y1, x2, y2, outline="green", width=2)
                 
     def handle_click(self, event):
-        """Handle mouse clicks on the board."""
         if self.board.is_game_over():
             return
             
@@ -156,7 +158,6 @@ class ChessGUI:
         self.draw_board()
         
     def new_game(self):
-        """Start a new game."""
         self.board = Board()
         self.selected_square = None
         self.valid_moves = []
@@ -164,7 +165,6 @@ class ChessGUI:
         self.update_evaluation()
         
     def undo_move(self):
-        """Undo the last move."""
         if self.board.undo_move():
             self.selected_square = None
             self.valid_moves = []
@@ -172,7 +172,6 @@ class ChessGUI:
             self.update_evaluation()
             
     def show_best_move(self):
-        """Show the best move in the current position."""
         if not self.board.is_game_over():
             move, score = self.board.get_best_move()
             if move is not None:
@@ -181,7 +180,6 @@ class ChessGUI:
                 messagebox.showinfo("Best Move", "No legal moves available.")
             
     def update_evaluation(self):
-        """Update the position evaluation display."""
         eval_score = self.board.get_evaluation()
         self.eval_label.config(text=f"Evaluation: {eval_score:+.2f}")
 

@@ -4,6 +4,7 @@ import sys
 import os
 from typing import Optional, List, Tuple, cast, Literal
 from PIL import Image, ImageDraw
+import pathlib
 
 class ChessGame:
     def __init__(self):
@@ -26,19 +27,21 @@ class ChessGame:
         self.move_history = []
         
     def load_pieces(self):
-        # Map chess piece symbols to image filenames
         piece_image_map = {
             'P': 'wP.png', 'N': 'wN.png', 'B': 'wB.png', 'R': 'wR.png', 'Q': 'wQ.png', 'K': 'wK.png',
             'p': 'bP.png', 'n': 'bN.png', 'b': 'bB.png', 'r': 'bR.png', 'q': 'bQ.png', 'k': 'bK.png',
         }
+        # Use the Wikipedia set from chessboardjs-1
+        base_path = pathlib.Path(__file__).parent / 'UI' / 'chesswebapp' / 'static' / 'chessboardjs-1' / 'img' / 'chesspieces' / 'wikipedia'
         for symbol, filename in piece_image_map.items():
             try:
-                image_path = os.path.join('assets', 'pieces', filename)
-                image = pygame.image.load(image_path)
+                image_path = (base_path / filename).resolve()
+                print(f"Trying to load: {image_path}")  # Debug print
+                image = pygame.image.load(str(image_path))
                 image = pygame.transform.smoothscale(image, (self.square_size, self.square_size))
                 self.pieces[symbol] = image
             except Exception as e:
-                print(f"Error loading image {filename}: {e}")
+                print(f"Error loading image {symbol} from {image_path}: {e}")
                 self.pieces[symbol] = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
     
     def get_square_from_pos(self, pos: Tuple[int, int]) -> Optional[int]:
@@ -89,8 +92,7 @@ class ChessGame:
                     symbol = piece.symbol()
                     piece_surface = self.pieces.get(symbol)
                     if piece_surface:
-                        self.screen.blit(piece_surface, 
-                                       (col * self.square_size, row * self.square_size))
+                        self.screen.blit(piece_surface, (col * self.square_size, row * self.square_size))
         
         # Highlight selected square
         if self.selected_square is not None:
