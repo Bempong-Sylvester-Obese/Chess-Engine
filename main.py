@@ -1,6 +1,7 @@
 import chess
 import pygame
 import sys
+import os
 from typing import Optional, List, Tuple, cast, Literal
 from PIL import Image, ImageDraw
 
@@ -24,48 +25,21 @@ class ChessGame:
         self.valid_moves = []
         self.move_history = []
         
-    def create_piece_image(self, color: str, piece_type: str) -> pygame.Surface:
-        size = self.square_size
-        image = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-        draw = ImageDraw.Draw(image)
-        
-        # Set piece color
-        piece_color = (255, 255, 255) if color == 'w' else (0, 0, 0)
-        
-        # Draw piece based on type
-        if piece_type == 'P':  # Pawn
-            draw.ellipse([size//4, size//4, 3*size//4, 3*size//4], fill=piece_color)
-            draw.rectangle([size//3, size//2, 2*size//3, 3*size//4], fill=piece_color)
-        elif piece_type == 'R':  # Rook
-            draw.rectangle([size//4, size//4, 3*size//4, 3*size//4], fill=piece_color)
-            draw.rectangle([size//3, size//6, 2*size//3, size//4], fill=piece_color)
-        elif piece_type == 'N':  # Knight
-            draw.polygon([(size//4, 3*size//4), (size//2, size//4), 
-                         (3*size//4, 3*size//4), (size//2, size//2)], fill=piece_color)
-        elif piece_type == 'B':  # Bishop
-            draw.polygon([(size//2, size//4), (3*size//4, 3*size//4),
-                         (size//4, 3*size//4)], fill=piece_color)
-        elif piece_type == 'Q':  # Queen
-            draw.ellipse([size//4, size//4, 3*size//4, 3*size//4], fill=piece_color)
-            draw.polygon([(size//2, size//6), (3*size//4, size//3),
-                         (size//4, size//3)], fill=piece_color)
-        elif piece_type == 'K':  # King
-            draw.rectangle([size//4, size//4, 3*size//4, 3*size//4], fill=piece_color)
-            draw.rectangle([size//3, size//6, 2*size//3, size//4], fill=piece_color)
-            draw.rectangle([size//2-5, size//6, size//2+5, size//4], fill=(255, 0, 0))
-        
-        # Convert PIL image to Pygame surface
-        valid_modes = {'P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA'}
-        mode = image.mode if image.mode in valid_modes else 'RGBA'
-        size = image.size
-        data = image.tobytes()
-        py_image = pygame.image.fromstring(data, size, cast(Literal['P', 'RGB', 'RGBX', 'RGBA', 'ARGB', 'BGRA'], mode))
-        return py_image
-        
     def load_pieces(self):
-        for color in ['w', 'b']:
-            for piece in ['P', 'R', 'N', 'B', 'Q', 'K']:
-                self.pieces[f"{color}{piece}"] = self.create_piece_image(color, piece)
+        # Map chess piece symbols to image filenames
+        piece_image_map = {
+            'P': 'wP.png', 'N': 'wN.png', 'B': 'wB.png', 'R': 'wR.png', 'Q': 'wQ.png', 'K': 'wK.png',
+            'p': 'bP.png', 'n': 'bN.png', 'b': 'bB.png', 'r': 'bR.png', 'q': 'bQ.png', 'k': 'bK.png',
+        }
+        for symbol, filename in piece_image_map.items():
+            try:
+                image_path = os.path.join('assets', 'pieces', filename)
+                image = pygame.image.load(image_path)
+                image = pygame.transform.smoothscale(image, (self.square_size, self.square_size))
+                self.pieces[symbol] = image
+            except Exception as e:
+                print(f"Error loading image {filename}: {e}")
+                self.pieces[symbol] = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
     
     def get_square_from_pos(self, pos: Tuple[int, int]) -> Optional[int]:
         x, y = pos
@@ -112,10 +86,11 @@ class ChessGame:
                 square = chess.square(col, 7-row)  # Flip row because chess ranks are bottom-to-top
                 piece = self.board.piece_at(square)
                 if piece:
-                    piece_key = f"{'w' if piece.color else 'b'}{piece.symbol().upper()}"
-                    piece_surface = self.pieces[piece_key]
-                    self.screen.blit(piece_surface, 
-                                   (col * self.square_size, row * self.square_size))
+                    symbol = piece.symbol()
+                    piece_surface = self.pieces.get(symbol)
+                    if piece_surface:
+                        self.screen.blit(piece_surface, 
+                                       (col * self.square_size, row * self.square_size))
         
         # Highlight selected square
         if self.selected_square is not None:

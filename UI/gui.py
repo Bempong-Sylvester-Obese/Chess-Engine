@@ -12,6 +12,10 @@ class ChessGUI:
         self.root = root
         self.root.title("Chess Engine")
         
+        # Configure root grid weights
+        self.root.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+
         # Initialize game state
         self.board = Board()
         self.selected_square = None
@@ -20,6 +24,10 @@ class ChessGUI:
         # Create main frame
         self.main_frame = ttk.Frame(root, padding="10")
         self.main_frame.grid(row=0, column=0, sticky="nsew")
+        # Configure main_frame grid weights
+        self.main_frame.rowconfigure(0, weight=1)
+        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.columnconfigure(1, weight=0)
         
         # Create board canvas
         self.canvas = tk.Canvas(self.main_frame, width=400, height=400)
