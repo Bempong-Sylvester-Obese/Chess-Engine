@@ -2,19 +2,20 @@
 <html>
 <head>
   <title>Foundation Chess Engine</title>
-  <link rel="stylesheet" href="/static/chessboard.css" />
-  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="/chessboardjs-1/css/chessboard-1.0.0.min.css" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
   <h1>Play Chess</h1>
   <div id="board" style="width: 400px"></div>
   <button onclick="resetGame()">Reset Game</button>
 
-  <script src="/static/chessboard.js"></script>
+  <script src="/chessboardjs-1/js/chessboard-1.0.0.min.js"></script>
   <script>
     var board = Chessboard('board', {
       draggable: true,
       position: 'start',
+      pieceTheme: '/chessboardjs-1/img/chesspieces/wikipedia/{piece}.png',
       onDrop: function (source, target, piece, newPos, oldPos, orientation) {
         const move = source + target;
         fetch('/move', {
