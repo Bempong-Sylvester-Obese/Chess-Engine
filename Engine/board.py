@@ -1,6 +1,7 @@
 import chess
 from typing import List, Optional, Tuple
 from .evaluation import evaluate_position, get_best_move
+
 class Board:
     def __init__(self):
         self.board = chess.Board()

@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import chess
 import os
 
-# Configure Flask app with proper static and template folders
 app = Flask(__name__, 
            static_folder='UI/chesswebapp/static',
            template_folder='UI/chesswebapp/templates')
@@ -16,7 +15,6 @@ def index():
 
 @app.route('/test-static')
 def test_static():
-    """Test route to check if static files are accessible"""
     static_path = os.path.join(os.getcwd(), 'UI', 'chesswebapp', 'static')
     return f"Static folder path: {static_path}<br>Exists: {os.path.exists(static_path)}"
 

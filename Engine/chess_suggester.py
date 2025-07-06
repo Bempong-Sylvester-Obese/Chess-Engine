@@ -1,4 +1,5 @@
 import chess
+
 class ChessSuggester:
     def __init__(self):
         self.material_values = {

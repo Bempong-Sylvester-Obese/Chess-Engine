@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Test script to verify the analysis integration works correctly.
-This script tests the chess engines and analysis capabilities without the GUI.
-"""
-
 import sys
 import os
 import chess
@@ -15,7 +9,6 @@ from Engine.enhanced_engine import EnhancedChessSuggester
 from Engine.chess_suggester import ChessSuggester
 
 def test_analysis_integration():
-    """Test the analysis integration functionality"""
     print("Testing Chess Analysis Integration...")
     print("=" * 50)
     

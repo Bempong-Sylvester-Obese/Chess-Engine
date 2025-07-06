@@ -6,7 +6,6 @@ from typing import Optional, List, Tuple, cast, Literal
 from PIL import Image, ImageDraw
 import pathlib
 
-# Add the Engine directory to the path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
 
 from Engine.enhanced_engine import EnhancedChessSuggester

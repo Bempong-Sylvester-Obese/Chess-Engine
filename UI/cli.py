@@ -28,7 +28,6 @@ class ChessCLI:
         print("  a b c d e f g h")
         
     def get_move(self) -> Optional[chess.Move]:
-        """Get a move from the user."""
         while True:
             try:
                 move_str = input("\nEnter your move (e.g., 'e2e4') or 'quit' to exit: ")
@@ -44,12 +43,10 @@ class ChessCLI:
                 print("Invalid move format! Use format like 'e2e4'.")
                 
     def show_evaluation(self):
-        """Show the current position evaluation."""
         eval_score = evaluate_position(self.board)
         print(f"\nPosition evaluation: {eval_score:+.2f}")
         
     def run(self):
-        """Main game loop."""
         print("Welcome to Chess CLI!")
         print("Enter moves in UCI format (e.g., 'e2e4')")
         print("Type 'quit' to exit")
