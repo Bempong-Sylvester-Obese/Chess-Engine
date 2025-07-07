@@ -14,8 +14,8 @@ from Engine.chess_suggester import ChessSuggester
 class ChessGame:
     def __init__(self):
         self.board = chess.Board()
-        self.screen_size = (1000, 800)  # Increased width to accommodate analysis panel
-        self.square_size = 700 // 8  # Chess board is 700x700
+        self.screen_size = (1000, 800)  
+        self.square_size = 700 // 8 
         
         # Initialize Pygame
         pygame.init()
