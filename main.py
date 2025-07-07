@@ -151,6 +151,33 @@ class ChessGame:
         self.screen.blit(title_text, (self.analysis_panel_x + 10, y_offset))
         y_offset += 40
         
+        # Draw evaluation bar
+        # Bar dimensions
+        bar_x = self.analysis_panel_x + self.analysis_panel_width - 40
+        bar_y = 70
+        bar_width = 20
+        bar_height = 200
+        
+        # Clamp evaluation to range for visualization
+        eval_score = self.analysis_data['current_evaluation']
+        capped_eval = max(min(eval_score, 5), -5)  # Range: -5 (Black) to +5 (White)
+        # Calculate white portion (from top)
+        white_ratio = (capped_eval + 5) / 10  # 0 (all black) to 1 (all white)
+        white_height = int(bar_height * white_ratio)
+        black_height = bar_height - white_height
+        
+        # Draw white part (top)
+        pygame.draw.rect(self.screen, (255, 255, 255), (bar_x, bar_y, bar_width, white_height))
+        # Draw black part (bottom)
+        pygame.draw.rect(self.screen, (0, 0, 0), (bar_x, bar_y + white_height, bar_width, black_height))
+        # Draw border
+        pygame.draw.rect(self.screen, (200, 200, 200), (bar_x, bar_y, bar_width, bar_height), 2)
+        # Draw W/B labels
+        w_label = self.small_font.render('W', True, (255, 255, 255))
+        b_label = self.small_font.render('B', True, (0, 0, 0))
+        self.screen.blit(w_label, (bar_x + bar_width + 5, bar_y - 5))
+        self.screen.blit(b_label, (bar_x + bar_width + 5, bar_y + bar_height - 15))
+        
         # Current evaluation
         eval_score = self.analysis_data['current_evaluation']
         eval_color = (0, 255, 0) if eval_score > 0 else (255, 0, 0) if eval_score < 0 else (255, 255, 255)

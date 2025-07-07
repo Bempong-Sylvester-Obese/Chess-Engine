@@ -2,7 +2,6 @@ import sys
 import os
 import chess
 
-# Add the Engine directory to the path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
 
 from Engine.enhanced_engine import EnhancedChessSuggester
