@@ -27,7 +27,7 @@ def test_analysis_integration():
     print(f"Enhanced Engine Evaluation: {enhanced_analysis['current_evaluation']:.2f}")
     print(f"Basic Engine Evaluation: {basic_analysis['current_evaluation']:.2f}")
     print(f"Game Status: {enhanced_analysis['is_check']}")
-    print("✓ Starting position analysis complete")
+    print("Starting position analysis complete")
     
     # Test after a few moves
     print("\n3. Testing position after some moves...")
