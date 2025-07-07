@@ -136,36 +136,32 @@ class ChessGame:
             for move in self.valid_moves:
                 self.highlight_square(move.to_square, (0, 255, 0, 128))  # Green highlight
     
-    def draw_analysis_panel(self):
-        if not self.analysis_data:
-            return
-            
-        # Draw background for analysis panel
-        pygame.draw.rect(self.screen, (50, 50, 50), 
-                        (self.analysis_panel_x, 0, self.analysis_panel_width, self.screen_size[1]))
-        
-        y_offset = 20
-        
-        # Title
-        title_text = self.large_font.render("Position Analysis", True, (255, 255, 255))
-        self.screen.blit(title_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 40
-        
-        # Draw evaluation bar
-        # Bar dimensions
-        bar_x = self.analysis_panel_x + self.analysis_panel_width - 40
-        bar_y = 70
+    def draw_right_panel(self):
+        # Draw right panel background
+        panel_x = self.square_size * 8
+        panel_width = self.screen_size[0] - panel_x
+        pygame.draw.rect(self.screen, (40, 40, 40), (panel_x, 0, panel_width, self.screen_size[1]))
+
+        y_offset = 30
+        # Draw avatar placeholder (circle with initials)
+        avatar_center = (panel_x + panel_width // 2, y_offset + 40)
+        pygame.draw.circle(self.screen, (200, 150, 100), avatar_center, 40)
+        initials = self.large_font.render('P', True, (255, 255, 255))
+        initials_rect = initials.get_rect(center=avatar_center)
+        self.screen.blit(initials, initials_rect)
+        y_offset += 90
+
+        # Draw evaluation bar below avatar
+        bar_x = panel_x + panel_width // 2 - 10
+        bar_y = y_offset
         bar_width = 20
         bar_height = 200
-        
         # Clamp evaluation to range for visualization
-        eval_score = self.analysis_data['current_evaluation']
+        eval_score = self.analysis_data['current_evaluation'] if self.analysis_data else 0
         capped_eval = max(min(eval_score, 5), -5)  # Range: -5 (Black) to +5 (White)
-        # Calculate white portion (from top)
         white_ratio = (capped_eval + 5) / 10  # 0 (all black) to 1 (all white)
         white_height = int(bar_height * white_ratio)
         black_height = bar_height - white_height
-        
         # Draw white part (top)
         pygame.draw.rect(self.screen, (255, 255, 255), (bar_x, bar_y, bar_width, white_height))
         # Draw black part (bottom)
@@ -177,89 +173,33 @@ class ChessGame:
         b_label = self.small_font.render('B', True, (0, 0, 0))
         self.screen.blit(w_label, (bar_x + bar_width + 5, bar_y - 5))
         self.screen.blit(b_label, (bar_x + bar_width + 5, bar_y + bar_height - 15))
-        
-        # Current evaluation
-        eval_score = self.analysis_data['current_evaluation']
-        eval_color = (0, 255, 0) if eval_score > 0 else (255, 0, 0) if eval_score < 0 else (255, 255, 255)
-        eval_text = self.font.render(f"Evaluation: {eval_score:+.2f}", True, eval_color)
-        self.screen.blit(eval_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 30
-        
-        # Position assessment
-        if abs(eval_score) > 3.0:
-            assessment = "White is winning" if eval_score > 0 else "Black is winning"
-        elif abs(eval_score) > 1.0:
-            assessment = "White is better" if eval_score > 0 else "Black is better"
-        else:
-            assessment = "Equal position"
-        
-        assessment_text = self.font.render(assessment, True, (255, 255, 255))
-        self.screen.blit(assessment_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 40
-        
-        # Game status
-        status_text = self.font.render("Game Status:", True, (255, 255, 255))
-        self.screen.blit(status_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 25
-        
-        if self.analysis_data['is_checkmate']:
-            status = "Checkmate!"
-            status_color = (255, 0, 0)
-        elif self.analysis_data['is_stalemate']:
-            status = "Stalemate"
-            status_color = (255, 165, 0)
-        elif self.analysis_data['is_check']:
-            status = "Check"
-            status_color = (255, 255, 0)
-        elif self.analysis_data['is_insufficient_material']:
-            status = "Insufficient Material"
-            status_color = (128, 128, 128)
-        else:
-            status = "Normal"
-            status_color = (0, 255, 0)
-        
-        status_text = self.font.render(status, True, status_color)
-        self.screen.blit(status_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 40
-        
-        # Move suggestions
-        suggestions_text = self.font.render("Top Moves:", True, (255, 255, 255))
-        self.screen.blit(suggestions_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 25
-        
-        for i, move_data in enumerate(self.analysis_data['suggested_moves'][:3]):
-            move_text = f"{i+1}. {move_data['san']}"
-            move_color = (0, 255, 0) if move_data['evaluation'] > 0 else (255, 0, 0) if move_data['evaluation'] < 0 else (255, 255, 255)
-            move_surface = self.small_font.render(move_text, True, move_color)
-            self.screen.blit(move_surface, (self.analysis_panel_x + 10, y_offset))
-            y_offset += 20
-            
-            eval_text = f"   {move_data['evaluation']:+.2f}"
-            eval_surface = self.small_font.render(eval_text, True, (200, 200, 200))
-            self.screen.blit(eval_surface, (self.analysis_panel_x + 10, y_offset))
-            y_offset += 25
-        
-        # Move history
-        y_offset += 20
-        history_text = self.font.render("Move History:", True, (255, 255, 255))
-        self.screen.blit(history_text, (self.analysis_panel_x + 10, y_offset))
-        y_offset += 25
-        
-        # Show last 5 moves
-        recent_moves = self.move_history[-10:]  # Last 10 moves
-        for i in range(0, len(recent_moves), 2):
+        y_offset += bar_height + 30
+
+        # Draw move list header
+        header = self.font.render(' ', True, (255, 255, 255))
+        self.screen.blit(header, (panel_x + 30, y_offset))
+        y_offset += 10
+
+        # Draw move list in two columns
+        moves = self.move_history
+        col1_x = panel_x + 30
+        col2_x = panel_x + panel_width // 2
+        row_height = 32
+        for i in range(0, len(moves), 2):
             move_num = (i // 2) + 1
-            move_text = f"{move_num}. {recent_moves[i].uci()}"
-            if i + 1 < len(recent_moves):
-                move_text += f" {recent_moves[i+1].uci()}"
-            
-            move_surface = self.small_font.render(move_text, True, (200, 200, 200))
-            self.screen.blit(move_surface, (self.analysis_panel_x + 10, y_offset))
-            y_offset += 20
-            
-            if y_offset > self.screen_size[1] - 100:  # Don't overflow
-                break
-                
+            move1 = moves[i].uci() if i < len(moves) else ''
+            move2 = moves[i+1].uci() if i+1 < len(moves) else ''
+            # Highlight last move
+            highlight = (i == len(moves)-2) or (i+1 == len(moves)-1)
+            font1 = self.large_font if highlight and i == len(moves)-2 else self.font
+            font2 = self.large_font if highlight and i+1 == len(moves)-1 else self.font
+            move_num_text = self.small_font.render(f'{move_num}.', True, (180, 180, 180))
+            self.screen.blit(move_num_text, (col1_x - 25, y_offset + (i//2)*row_height))
+            move1_text = font1.render(move1, True, (255, 255, 255))
+            self.screen.blit(move1_text, (col1_x, y_offset + (i//2)*row_height))
+            move2_text = font2.render(move2, True, (255, 255, 255))
+            self.screen.blit(move2_text, (col2_x, y_offset + (i//2)*row_height))
+
     def handle_click(self, pos: tuple[int, int]) -> Optional[chess.Move]:
         square = self.get_square_from_pos(pos)
         if square is None:
@@ -330,7 +270,7 @@ class ChessGame:
             
             # Draw the current state
             self.draw_board()
-            self.draw_analysis_panel()
+            self.draw_right_panel()
             
             pygame.display.flip()
             
