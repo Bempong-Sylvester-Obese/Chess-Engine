@@ -78,7 +78,7 @@
 ## 🎯 Usage
 
 ### 🎮 Graphical Interface (Recommended)
-Launch the beautiful Pygame-based chess interface:
+Launch Pygame-based chess interface:
 ```bash
 python main.py
 ```
