@@ -133,6 +133,189 @@ python Scripts/visualize_analysis.py
 
 ## 🏗️ Architecture
 
+### System Overview
+
+```mermaid
+graph TB
+    subgraph "User Interfaces"
+        GUI[🎨 Pygame GUI]
+        CLI[💻 Command Line]
+        API[🌐 Web API]
+        WEB[📊 Web Dashboard]
+    end
+    
+    subgraph "Core Engine"
+        ENGINE[🧠 Enhanced Engine]
+        EVAL[📊 Evaluation]
+        SUGGEST[💡 Move Suggester]
+        BOARD[♟️ Board Logic]
+    end
+    
+    subgraph "Machine Learning"
+        ML[🤖 ML Model]
+        FEATURES[🔍 Feature Extraction]
+        TRAINING[📈 Training Pipeline]
+        DATA[📊 Data Analysis]
+    end
+    
+    subgraph "Data & Storage"
+        MODEL[💾 Trained Model]
+        DATASET[📁 Training Data]
+        PLOTS[📈 Analysis Plots]
+    end
+    
+    GUI --> ENGINE
+    CLI --> ENGINE
+    API --> ENGINE
+    WEB --> ENGINE
+    
+    ENGINE --> EVAL
+    ENGINE --> SUGGEST
+    ENGINE --> BOARD
+    
+    EVAL --> ML
+    SUGGEST --> ML
+    ML --> FEATURES
+    FEATURES --> TRAINING
+    TRAINING --> DATA
+    
+    ML --> MODEL
+    TRAINING --> DATASET
+    DATA --> PLOTS
+    
+    style GUI fill:#e1f5fe
+    style CLI fill:#f3e5f5
+    style API fill:#e8f5e8
+    style WEB fill:#fff3e0
+    style ENGINE fill:#ffebee
+    style ML fill:#f1f8e9
+```
+
+### Data Flow
+
+```mermaid
+flowchart LR
+    subgraph "Input"
+        POSITION[Chess Position]
+        MOVE[Player Move]
+    end
+    
+    subgraph "Processing"
+        FEATURES[Extract Features]
+        EVAL[Evaluate Position]
+        ML[ML Analysis]
+        SUGGEST[Generate Suggestions]
+    end
+    
+    subgraph "Output"
+        EVAL_BAR[Evaluation Bar]
+        MOVES[Best Moves]
+        ANALYSIS[Position Analysis]
+    end
+    
+    POSITION --> FEATURES
+    MOVE --> FEATURES
+    
+    FEATURES --> EVAL
+    FEATURES --> ML
+    
+    EVAL --> SUGGEST
+    ML --> SUGGEST
+    
+    SUGGEST --> MOVES
+    EVAL --> EVAL_BAR
+    ML --> ANALYSIS
+    
+    style POSITION fill:#e3f2fd
+    style MOVE fill:#e3f2fd
+    style FEATURES fill:#f3e5f5
+    style EVAL fill:#e8f5e8
+    style ML fill:#fff3e0
+    style SUGGEST fill:#ffebee
+    style EVAL_BAR fill:#e1f5fe
+    style MOVES fill:#f1f8e9
+    style ANALYSIS fill:#fce4ec
+```
+
+### Training Pipeline
+
+```mermaid
+flowchart TD
+    subgraph "Data Collection"
+        GAMES[Chess Games]
+        SYNTHETIC[Synthetic Data]
+        ANALYSIS[Position Analysis]
+    end
+    
+    subgraph "Feature Engineering"
+        MATERIAL[Material Count]
+        MOBILITY[Piece Mobility]
+        KING_SAFETY[King Safety]
+        PAWN_STRUCT[Pawn Structure]
+    end
+    
+    subgraph "Model Training"
+        FEATURES[Feature Matrix]
+        LABELS[Position Labels]
+        TRAIN[Train Model]
+        VALIDATE[Validate Model]
+    end
+    
+    subgraph "Deployment"
+        SAVE[Save Model]
+        INTEGRATE[Integrate with Engine]
+        MONITOR[Monitor Performance]
+    end
+    
+    GAMES --> FEATURES
+    SYNTHETIC --> FEATURES
+    ANALYSIS --> FEATURES
+    
+    MATERIAL --> FEATURES
+    MOBILITY --> FEATURES
+    KING_SAFETY --> FEATURES
+    PAWN_STRUCT --> FEATURES
+    
+    FEATURES --> TRAIN
+    LABELS --> TRAIN
+    TRAIN --> VALIDATE
+    VALIDATE --> SAVE
+    SAVE --> INTEGRATE
+    INTEGRATE --> MONITOR
+    
+    style GAMES fill:#e8f5e8
+    style SYNTHETIC fill:#e8f5e8
+    style ANALYSIS fill:#e8f5e8
+    style FEATURES fill:#fff3e0
+    style TRAIN fill:#ffebee
+    style SAVE fill:#e1f5fe
+```
+
+### Component Interaction
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant GUI
+    participant Engine
+    participant ML
+    participant Board
+    
+    User->>GUI: Make Move
+    GUI->>Engine: Process Move
+    Engine->>Board: Update Position
+    Board->>Engine: New Position
+    
+    Engine->>ML: Request Analysis
+    ML->>Engine: Evaluation & Suggestions
+    
+    Engine->>GUI: Return Results
+    GUI->>User: Display Analysis
+    
+    Note over Engine,ML: Real-time evaluation
+    Note over GUI,User: Visual feedback
+```
+
 ```
 Chess-Engine/
 ├── 🎮 main.py                 # Main Pygame GUI application
@@ -192,6 +375,35 @@ curl "http://localhost:8000/best-move?depth=15"
 
 ## 🧪 Testing
 
+### Test Architecture
+
+```mermaid
+graph LR
+    subgraph "Test Types"
+        UNIT[Unit Tests]
+        INTEGRATION[Integration Tests]
+        API[API Tests]
+        ML[ML Tests]
+    end
+    
+    subgraph "Test Coverage"
+        ENGINE[Engine Logic]
+        EVAL[Evaluation]
+        SUGGEST[Move Suggestions]
+        GUI[User Interface]
+    end
+    
+    UNIT --> ENGINE
+    INTEGRATION --> EVAL
+    API --> SUGGEST
+    ML --> GUI
+    
+    style UNIT fill:#e8f5e8
+    style INTEGRATION fill:#fff3e0
+    style API fill:#ffebee
+    style ML fill:#e1f5fe
+```
+
 Run the comprehensive test suite:
 ```bash
 # Run all tests
@@ -207,6 +419,44 @@ pytest Tests/test_blunder.py
 
 ## 📈 Performance
 
+### Performance Metrics
+
+```mermaid
+graph LR
+    subgraph "Speed"
+        EVAL_TIME[< 1s Evaluation]
+        MOVE_GEN[Fast Move Generation]
+        ML_INFERENCE[Quick ML Inference]
+    end
+    
+    subgraph "Accuracy"
+        ML_ACCURACY[70% ML Weight]
+        TRADITIONAL[30% Traditional]
+        COMBINED[Combined Analysis]
+    end
+    
+    subgraph "Efficiency"
+        MEMORY[Memory Optimized]
+        SCALABLE[Scalable Design]
+        MODULAR[Modular Architecture]
+    end
+    
+    EVAL_TIME --> COMBINED
+    MOVE_GEN --> COMBINED
+    ML_INFERENCE --> COMBINED
+    
+    ML_ACCURACY --> COMBINED
+    TRADITIONAL --> COMBINED
+    
+    COMBINED --> MEMORY
+    COMBINED --> SCALABLE
+    COMBINED --> MODULAR
+    
+    style EVAL_TIME fill:#e8f5e8
+    style ML_ACCURACY fill:#fff3e0
+    style MEMORY fill:#ffebee
+```
+
 The engine features:
 - **Real-time Analysis**: Sub-second position evaluation
 - **ML Enhancement**: 70% ML + 30% traditional evaluation
@@ -216,6 +466,31 @@ The engine features:
 ---
 
 ## 🤝 Contributing
+
+### Contribution Workflow
+
+```mermaid
+flowchart TD
+    A[Fork Repository] --> B[Create Feature Branch]
+    B --> C[Make Changes]
+    C --> D[Run Tests]
+    D --> E{Tests Pass?}
+    E -->|No| F[Fix Issues]
+    F --> D
+    E -->|Yes| G[Commit Changes]
+    G --> H[Push to Branch]
+    H --> I[Create Pull Request]
+    I --> J[Code Review]
+    J --> K{Approved?}
+    K -->|No| L[Address Feedback]
+    L --> J
+    K -->|Yes| M[Merge to Main]
+    
+    style A fill:#e8f5e8
+    style M fill:#e8f5e8
+    style E fill:#ffebee
+    style K fill:#ffebee
+```
 
 We welcome contributions! Please see our contributing guidelines:
 
