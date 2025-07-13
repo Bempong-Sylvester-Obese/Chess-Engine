@@ -45,6 +45,10 @@ class ChessGame:
         self.analysis_panel_x = 720
         self.analysis_panel_width = 280
         
+        # For animated evaluation bar
+        self.displayed_eval = 0.0
+        self.eval_animation_speed = 0.15  # Higher = faster animation
+        
         # Update analysis on initialization
         self.update_analysis()
         
@@ -127,6 +131,21 @@ class ChessGame:
                     piece_surface = self.pieces.get(symbol)
                     if piece_surface:
                         self.screen.blit(piece_surface, (col * self.square_size, row * self.square_size))
+                
+                # Draw rank (1-8) on the left edge of each row
+                if col == 0:
+                    rank_num = str(8 - row)
+                    rank_font = self.small_font
+                    rank_color = (80, 80, 80)
+                    rank_surf = rank_font.render(rank_num, True, rank_color)
+                    self.screen.blit(rank_surf, (4, row * self.square_size + 4))
+                # Draw file (a-h) on the bottom edge of each column
+                if row == 7:
+                    file_letter = chr(ord('a') + col)
+                    file_font = self.small_font
+                    file_color = (80, 80, 80)
+                    file_surf = file_font.render(file_letter, True, file_color)
+                    self.screen.blit(file_surf, (col * self.square_size + self.square_size - 18, self.square_size * 8 - 20))
         
         # Highlight selected square
         if self.selected_square is not None:
@@ -151,29 +170,138 @@ class ChessGame:
         self.screen.blit(initials, initials_rect)
         y_offset += 90
 
-        # Draw evaluation bar below avatar
-        bar_x = panel_x + panel_width // 2 - 10
+        # --- Enhanced Evaluation Bar ---
+        bar_x = panel_x + panel_width // 2 - 20
         bar_y = y_offset
-        bar_width = 20
-        bar_height = 200
-        # Clamp evaluation to range for visualization
-        eval_score = self.analysis_data['current_evaluation'] if self.analysis_data else 0
-        capped_eval = max(min(eval_score, 5), -5)  # Range: -5 (Black) to +5 (White)
+        bar_width = 40
+        bar_height = 220
+        radius = 12
+
+        # Clamp and animate evaluation
+        target_eval = self.analysis_data['current_evaluation'] if self.analysis_data else 0
+        target_eval = max(min(target_eval, 5), -5)
+        # Smooth animation
+        self.displayed_eval += (target_eval - self.displayed_eval) * self.eval_animation_speed
+        capped_eval = self.displayed_eval
         white_ratio = (capped_eval + 5) / 10  # 0 (all black) to 1 (all white)
         white_height = int(bar_height * white_ratio)
         black_height = bar_height - white_height
-        # Draw white part (top)
-        pygame.draw.rect(self.screen, (255, 255, 255), (bar_x, bar_y, bar_width, white_height))
-        # Draw black part (bottom)
-        pygame.draw.rect(self.screen, (0, 0, 0), (bar_x, bar_y + white_height, bar_width, black_height))
+
+        # Create a surface for the bar (with per-pixel alpha)
+        bar_surface = pygame.Surface((bar_width, bar_height), pygame.SRCALPHA)
+
+        # Draw vertical gradient (white to black)
+        for y in range(bar_height):
+            t = y / bar_height
+            # Interpolate color: white at top (t=0), black at bottom (t=1)
+            color = (
+                int(255 * (1 - t)),
+                int(255 * (1 - t)),
+                int(255 * (1 - t)),
+                255
+            )
+            pygame.draw.rect(bar_surface, color, (0, y, bar_width, 1))
+
+        # Draw rounded corners mask
+        mask = pygame.Surface((bar_width, bar_height), pygame.SRCALPHA)
+        pygame.draw.rect(mask, (255, 255, 255, 255), (0, 0, bar_width, bar_height), border_radius=radius)
+        bar_surface.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+
+        # Draw highlight/glow at the boundary
+        boundary_y = white_height
+        if 0 < boundary_y < bar_height:
+            glow_color = (120, 200, 255, 120)
+            pygame.draw.rect(bar_surface, glow_color, (0, boundary_y-2, bar_width, 4), border_radius=radius)
+
         # Draw border
-        pygame.draw.rect(self.screen, (200, 200, 200), (bar_x, bar_y, bar_width, bar_height), 2)
+        pygame.draw.rect(bar_surface, (200, 200, 200, 255), (0, 0, bar_width, bar_height), 2, border_radius=radius)
+
+        # Blit the bar to the screen
+        self.screen.blit(bar_surface, (bar_x, bar_y))
+
+        # Draw numeric evaluation overlay (to the right of the bar, aligned with boundary)
+        eval_text = f"{capped_eval:+.2f}"
+        eval_render = self.large_font.render(eval_text, True, (40, 120, 255))
+        # Position: right of the bar, vertically at the boundary (clamp to bar edges)
+        eval_y = bar_y + min(max(white_height, 0), bar_height - 1)
+        eval_rect = eval_render.get_rect(midleft=(bar_x + bar_width + 16, eval_y))
+        self.screen.blit(eval_render, eval_rect)
+
         # Draw W/B labels
         w_label = self.small_font.render('W', True, (255, 255, 255))
         b_label = self.small_font.render('B', True, (0, 0, 0))
-        self.screen.blit(w_label, (bar_x + bar_width + 5, bar_y - 5))
-        self.screen.blit(b_label, (bar_x + bar_width + 5, bar_y + bar_height - 15))
+        self.screen.blit(w_label, (bar_x + bar_width + 8, bar_y - 5))
+        self.screen.blit(b_label, (bar_x + bar_width + 8, bar_y + bar_height - 15))
         y_offset += bar_height + 30
+
+        # --- In-depth Analysis Information ---
+        if self.analysis_data:
+            # Material imbalance
+            white_material = sum([
+                len(self.board.pieces(pt, chess.WHITE)) * val
+                for pt, val in self.enhanced_engine.material_values.items()
+            ])
+            black_material = sum([
+                len(self.board.pieces(pt, chess.BLACK)) * val
+                for pt, val in self.enhanced_engine.material_values.items()
+            ])
+            material_imbalance = white_material - black_material
+            material_text = f"Material: W {white_material:.1f} / B {black_material:.1f} (Δ {material_imbalance:+.1f})"
+            material_render = self.font.render(material_text, True, (220, 220, 220))
+            self.screen.blit(material_render, (panel_x + 20, y_offset))
+            y_offset += 28
+
+            # Mobility
+            white_mobility = len([m for m in self.board.legal_moves if self.board.turn]) if self.board.turn else len([m for m in self.board.legal_moves if not self.board.turn])
+            black_mobility = len([m for m in self.board.legal_moves if not self.board.turn]) if self.board.turn else len([m for m in self.board.legal_moves if self.board.turn])
+            mobility_text = f"Mobility: W {white_mobility} / B {black_mobility}"
+            mobility_render = self.font.render(mobility_text, True, (200, 200, 200))
+            self.screen.blit(mobility_render, (panel_x + 20, y_offset))
+            y_offset += 24
+
+            # King safety (distance from center)
+            wk_sq = self.board.king(chess.WHITE)
+            bk_sq = self.board.king(chess.BLACK)
+            wk_dist = abs(3.5 - chess.square_file(wk_sq)) + abs(3.5 - chess.square_rank(wk_sq)) if wk_sq is not None else 0
+            bk_dist = abs(3.5 - chess.square_file(bk_sq)) + abs(3.5 - chess.square_rank(bk_sq)) if bk_sq is not None else 0
+            king_safety_text = f"King Center Dist: W {wk_dist:.1f} / B {bk_dist:.1f}"
+            king_safety_render = self.font.render(king_safety_text, True, (180, 180, 255))
+            self.screen.blit(king_safety_render, (panel_x + 20, y_offset))
+            y_offset += 24
+
+            # Pawn structure (doubled pawns)
+            doubled_white = sum([max(0, len(self.board.pieces(chess.PAWN, chess.WHITE) & chess.BB_FILES[file]) - 1) for file in range(8)])
+            doubled_black = sum([max(0, len(self.board.pieces(chess.PAWN, chess.BLACK) & chess.BB_FILES[file]) - 1) for file in range(8)])
+            pawn_structure_text = f"Doubled Pawns: W {doubled_white} / B {doubled_black}"
+            pawn_structure_render = self.font.render(pawn_structure_text, True, (200, 180, 180))
+            self.screen.blit(pawn_structure_render, (panel_x + 20, y_offset))
+            y_offset += 24
+
+            # Game phase
+            total_pieces = len(self.board.piece_map())
+            if total_pieces > 24:
+                phase = "Opening"
+            elif total_pieces > 12:
+                phase = "Middlegame"
+            else:
+                phase = "Endgame"
+            phase_text = f"Game Phase: {phase}"
+            phase_render = self.font.render(phase_text, True, (180, 255, 180))
+            self.screen.blit(phase_render, (panel_x + 20, y_offset))
+            y_offset += 28
+
+            # Human-readable position assessment
+            eval_score = self.analysis_data['current_evaluation']
+            if abs(eval_score) > 3.0:
+                assessment = "White is winning" if eval_score > 0 else "Black is winning"
+            elif abs(eval_score) > 1.0:
+                assessment = "White is better" if eval_score > 0 else "Black is better"
+            else:
+                assessment = "Equal position"
+            assessment_text = f"Assessment: {assessment}"
+            assessment_render = self.font.render(assessment_text, True, (255, 220, 120))
+            self.screen.blit(assessment_render, (panel_x + 20, y_offset))
+            y_offset += 32
 
         # Draw move list header
         header = self.font.render(' ', True, (255, 255, 255))
