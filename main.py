@@ -100,7 +100,7 @@ class ChessGame:
     
     def highlight_square(self, square: int, color: Tuple[int, int, int, int] = (255, 255, 0, 128)):
         file_idx = chess.square_file(square)
-        rank_idx = 7 - chess.square_rank(square)  # Flip because chess ranks are bottom-to-top
+        rank_idx = 7 - chess.square_rank(square)
         
         # Create a semi-transparent surface for highlighting
         highlight = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
@@ -234,7 +234,7 @@ class ChessGame:
         self.screen.blit(b_label, (bar_x + bar_width + 8, bar_y + bar_height - 15))
         y_offset += bar_height + 30
 
-        # --- In-depth Analysis Information ---
+        # In-depth Analysis Information
         if self.analysis_data:
             # Material imbalance
             white_material = sum([

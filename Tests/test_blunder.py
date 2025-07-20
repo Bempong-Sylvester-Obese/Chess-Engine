@@ -58,8 +58,8 @@ if __name__ == "__main__":
     # CELEBRATION TIME! 🎉
     if result.wasSuccessful():
         print("\n" + "="*50)
-        print("🎉🎉🎉 BLUNDER TESTS PASSED! PERFECT CHESS! 🎉🎉🎉")
+        print("BLUNDER TESTS PASSED! PERFECT CHESS!")
         print("="*50)
-        print("   Congratulations on your chess engine mastery!")
-        print("   All tests verified by Stockfish at depth 16!")
+        print("Congratulations on your chess engine mastery!")
+        print("All tests verified by Stockfish at depth 16!")
         print("="*50 + "\n")
