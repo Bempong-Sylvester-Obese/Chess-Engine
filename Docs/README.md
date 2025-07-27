@@ -519,17 +519,6 @@ pytest Tests/
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
-
-## 🙏 Acknowledgments
-
-- **python-chess**: Core chess logic and board representation
-- **Stockfish**: Advanced chess engine integration
-- **scikit-learn**: Machine learning capabilities
-- **Pygame**: Graphical user interface
-- **FastAPI**: Web API framework
-
----
 
 <div align="center">
 
