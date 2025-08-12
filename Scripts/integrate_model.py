@@ -14,7 +14,7 @@ from Engine.move_suggestion import MoveSuggester
 def extract_features(board):
     features = []
     
-    # Material count for each piece type
+    # Material count for each piece
     piece_values = {
         chess.PAWN: 1.0,
         chess.KNIGHT: 3.0,
