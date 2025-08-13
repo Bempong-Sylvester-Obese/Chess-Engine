@@ -15,6 +15,11 @@
 
 ---
 
+> **⚠️ Notice: Web Application in Development**  
+> The web interface for this chess engine is currently under active development. While the core engine, GUI, CLI, and API are fully functional, the web application may have limited features or be temporarily unavailable. We recommend using the Pygame GUI or CLI for the best experience while the web interface is being completed.
+
+---
+
 ## 🚀 Features
 
 ### 🧠 **Machine Learning Enhanced Analysis**
