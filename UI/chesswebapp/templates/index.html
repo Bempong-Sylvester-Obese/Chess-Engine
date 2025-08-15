@@ -1,45 +1,336 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Foundation Chess Engine</title>
-  <link rel="stylesheet" href="/chessboardjs-1/css/chessboard-1.0.0.min.css" />
-  <link rel="stylesheet" href="/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation Chess Engine</title>
+    <link rel="stylesheet" href="/chessboardjs-1/css/chessboard-1.0.0.min.css" />
+    <link rel="stylesheet" href="/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-  <h1>Play Chess</h1>
-  <div id="board" style="width: 400px"></div>
-  <button onclick="resetGame()">Reset Game</button>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-chess-king"></i> Foundation Chess Engine</h1>
+            <p class="subtitle">Advanced Chess Analysis & Move Suggestions</p>
+        </header>
 
-  <script src="/chessboardjs-1/js/chessboard-1.0.0.min.js"></script>
-  <script>
-    var board = Chessboard('board', {
-      draggable: true,
-      position: 'start',
-      pieceTheme: '/chessboardjs-1/img/chesspieces/wikipedia/{piece}.png',
-      onDrop: function (source, target, piece, newPos, oldPos, orientation) {
-        const move = source + target;
-        fetch('/move', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ move: move })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'illegal') {
-            alert('Illegal move!');
-            board.position(oldPos);
-          } else {
-            board.position(data.fen);
-          }
+        <div class="game-container">
+            <div class="left-panel">
+                <div class="board-container">
+                    <div class="board-header">
+                        <h3><i class="fas fa-chess-board"></i> Game Board</h3>
+                        <div class="game-controls">
+                            <button class="btn btn-primary" onclick="resetGame()">
+                                <i class="fas fa-redo"></i> New Game
+                            </button>
+                            <button class="btn btn-secondary" onclick="flipBoard()">
+                                <i class="fas fa-sync"></i> Flip Board
+                            </button>
+                        </div>
+                    </div>
+                    <div id="board"></div>
+                    <div class="game-status">
+                        <div id="status-indicator" class="status-indicator">
+                            <span class="status-text">White to move</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="analysis-panel">
+                    <div class="panel-section">
+                        <h3><i class="fas fa-brain"></i> Position Analysis</h3>
+                        <div class="evaluation-display">
+                            <div class="eval-bar">
+                                <div id="eval-bar-fill" class="eval-bar-fill"></div>
+                            </div>
+                            <div id="evaluation-text" class="evaluation-text">0.0</div>
+                        </div>
+                        <div id="position-info" class="position-info">
+                            <div class="info-item">
+                                <span class="info-label">Check:</span>
+                                <span id="check-status" class="info-value">No</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Game Over:</span>
+                                <span id="game-over-status" class="info-value">No</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3><i class="fas fa-lightbulb"></i> Move Suggestions</h3>
+                        <div id="move-suggestions" class="move-suggestions">
+                            <div class="loading">Loading suggestions...</div>
+                        </div>
+                    </div>
+
+                    <div class="panel-section">
+                        <h3><i class="fas fa-history"></i> Move History</h3>
+                        <div id="move-history" class="move-history">
+                            <div class="history-placeholder">No moves played yet</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-panel">
+            <div class="game-info">
+                <div class="info-card">
+                    <h4><i class="fas fa-clock"></i> Game Time</h4>
+                    <div id="game-timer" class="timer">00:00</div>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-route"></i> Move Count</h4>
+                    <div id="move-count" class="move-count">0</div>
+                </div>
+                <div class="info-card">
+                    <h4><i class="fas fa-trophy"></i> Result</h4>
+                    <div id="game-result" class="game-result">In Progress</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/chessboardjs-1/js/chessboard-1.0.0.min.js"></script>
+    <script>
+        let board;
+        let gameStartTime = Date.now();
+        let moveHistory = [];
+        let currentPosition = 'start';
+
+        // Initialize the chessboard
+        function initializeBoard() {
+            board = Chessboard('board', {
+                draggable: true,
+                position: 'start',
+                pieceTheme: '/chessboardjs-1/img/chesspieces/wikipedia/{piece}.png',
+                onDrop: function (source, target, piece, newPos, oldPos, orientation) {
+                    const move = source + target;
+                    makeMove(move, oldPos);
+                },
+                onSnapEnd: function() {
+                    board.position(currentPosition);
+                }
+            });
+        }
+
+        // Make a move
+        function makeMove(move, oldPos) {
+            fetch('/move', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ move: move })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'illegal') {
+                    showNotification('Illegal move!', 'error');
+                    board.position(oldPos);
+                } else {
+                    currentPosition = data.fen;
+                    board.position(currentPosition);
+                    updateGameState();
+                    getMoveSuggestions();
+                    updateMoveHistory(move);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error making move', 'error');
+                board.position(oldPos);
+            });
+        }
+
+        // Get move suggestions
+        function getMoveSuggestions() {
+            fetch('/suggest', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fen: currentPosition })
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayMoveSuggestions(data);
+            })
+            .catch(error => {
+                console.error('Error getting suggestions:', error);
+            });
+        }
+
+        // Display move suggestions
+        function displayMoveSuggestions(data) {
+            const suggestionsContainer = document.getElementById('move-suggestions');
+            
+            if (data.suggested_moves && data.suggested_moves.length > 0) {
+                let html = '';
+                data.suggested_moves.forEach((move, index) => {
+                    const evalClass = move.evaluation > 0 ? 'positive' : 'negative';
+                    html += `
+                        <div class="suggestion-item">
+                            <div class="move-number">${index + 1}</div>
+                            <div class="move-details">
+                                <div class="move-san">${move.san}</div>
+                                <div class="move-eval ${evalClass}">${move.evaluation > 0 ? '+' : ''}${move.evaluation.toFixed(2)}</div>
+                            </div>
+                            <div class="move-comment">${move.comment}</div>
+                        </div>
+                    `;
+                });
+                suggestionsContainer.innerHTML = html;
+            } else {
+                suggestionsContainer.innerHTML = '<div class="no-suggestions">No moves available</div>';
+            }
+        }
+
+        // Update game state
+        function updateGameState() {
+            fetch('/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fen: currentPosition })
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateEvaluation(data.current_evaluation);
+                updatePositionInfo(data);
+                updateStatusIndicator(data);
+            })
+            .catch(error => {
+                console.error('Error updating game state:', error);
+            });
+        }
+
+        // Update evaluation display
+        function updateEvaluation(evaluation) {
+            const evalText = document.getElementById('evaluation-text');
+            const evalBarFill = document.getElementById('eval-bar-fill');
+            
+            evalText.textContent = evaluation > 0 ? `+${evaluation.toFixed(2)}` : evaluation.toFixed(2);
+            evalText.className = `evaluation-text ${evaluation > 0 ? 'positive' : evaluation < 0 ? 'negative' : 'neutral'}`;
+            
+            // Update evaluation bar
+            const percentage = Math.min(Math.abs(evaluation) / 10, 1) * 100;
+            evalBarFill.style.width = `${percentage}%`;
+            evalBarFill.className = `eval-bar-fill ${evaluation > 0 ? 'positive' : 'negative'}`;
+        }
+
+        // Update position information
+        function updatePositionInfo(data) {
+            document.getElementById('check-status').textContent = data.is_check ? 'Yes' : 'No';
+            document.getElementById('check-status').className = `info-value ${data.is_check ? 'warning' : ''}`;
+            
+            const gameOver = data.is_checkmate || data.is_stalemate || data.is_insufficient_material;
+            document.getElementById('game-over-status').textContent = gameOver ? 'Yes' : 'No';
+            document.getElementById('game-over-status').className = `info-value ${gameOver ? 'error' : ''}`;
+        }
+
+        // Update status indicator
+        function updateStatusIndicator(data) {
+            const statusText = document.querySelector('.status-text');
+            if (data.is_checkmate) {
+                statusText.textContent = 'Checkmate!';
+                statusText.className = 'status-text checkmate';
+            } else if (data.is_stalemate) {
+                statusText.textContent = 'Stalemate!';
+                statusText.className = 'status-text stalemate';
+            } else if (data.is_check) {
+                statusText.textContent = 'Check!';
+                statusText.className = 'status-text check';
+            } else {
+                statusText.textContent = 'White to move';
+                statusText.className = 'status-text';
+            }
+        }
+
+        // Update move history
+        function updateMoveHistory(move) {
+            moveHistory.push(move);
+            const historyContainer = document.getElementById('move-history');
+            const moveCount = document.getElementById('move-count');
+            
+            moveCount.textContent = moveHistory.length;
+            
+            if (moveHistory.length > 0) {
+                let html = '';
+                for (let i = 0; i < moveHistory.length; i += 2) {
+                    const moveNumber = Math.floor(i / 2) + 1;
+                    const whiteMove = moveHistory[i];
+                    const blackMove = moveHistory[i + 1];
+                    
+                    html += `
+                        <div class="history-move">
+                            <span class="move-number">${moveNumber}.</span>
+                            <span class="move-text">${whiteMove}</span>
+                            ${blackMove ? `<span class="move-text">${blackMove}</span>` : ''}
+                        </div>
+                    `;
+                }
+                historyContainer.innerHTML = html;
+            }
+        }
+
+        // Reset game
+        function resetGame() {
+            fetch('/reset', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    board.position('start');
+                    currentPosition = 'start';
+                    moveHistory = [];
+                    gameStartTime = Date.now();
+                    updateGameState();
+                    getMoveSuggestions();
+                    document.getElementById('move-history').innerHTML = '<div class="history-placeholder">No moves played yet</div>';
+                    document.getElementById('move-count').textContent = '0';
+                    showNotification('Game reset!', 'success');
+                })
+                .catch(error => {
+                    console.error('Error resetting game:', error);
+                    showNotification('Error resetting game', 'error');
+                });
+        }
+
+        // Flip board
+        function flipBoard() {
+            board.flip();
+            showNotification('Board flipped!', 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Update timer
+        function updateTimer() {
+            const elapsed = Date.now() - gameStartTime;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('game-timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBoard();
+            updateGameState();
+            getMoveSuggestions();
+            
+            // Update timer every second
+            setInterval(updateTimer, 1000);
         });
-      }
-    });
-
-    function resetGame() {
-      fetch('/reset', { method: 'POST' })
-        .then(res => res.json())
-        .then(data => board.position('start'));
-    }
-  </script>
+    </script>
 </body>
 </html>
