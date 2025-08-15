@@ -28,7 +28,7 @@ def main():
         print("\nPlease ensure all files are present before running the webapp.")
         return 1
     
-    print("✅ All required files found")
+    print("All required files found")
     
     # Check if Flask is installed
     try:
@@ -47,8 +47,8 @@ def main():
         return 1
     
     print("\nStarting the chess webapp...")
-    print("📱 The webapp will be available at: http://localhost:5001")
-    print("🔄 Press Ctrl+C to stop the server")
+    print("The webapp will be available at: http://localhost:5001")
+    print("Press Ctrl+C to stop the server")
     print("-" * 50)
     
     # Open browser after a short delay
