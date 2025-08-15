@@ -10,7 +10,6 @@ class ChessCLI:
         self.move_history = []
         
     def print_board(self):
-        """Print the current board state in ASCII format."""
         print("\n  a b c d e f g h")
         print(" +-----------------+")
         for rank in range(7, -1, -1):

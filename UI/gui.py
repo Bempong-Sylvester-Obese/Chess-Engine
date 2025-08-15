@@ -58,7 +58,6 @@ class ChessGUI:
         self.draw_board()
         
     def load_pieces(self):
-        """Load chess piece images from chessboardjs-1 set."""
         piece_image_map = {
             'P': 'wP.png', 'N': 'wN.png', 'B': 'wB.png', 'R': 'wR.png', 'Q': 'wQ.png', 'K': 'wK.png',
             'p': 'bP.png', 'n': 'bN.png', 'b': 'bB.png', 'r': 'bR.png', 'q': 'bQ.png', 'k': 'bK.png',
