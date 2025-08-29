@@ -8,6 +8,12 @@ def main():
     print("♔ Foundation Chess Engine Webapp ♔")
     print("=" * 50)
     
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    
+    os.chdir(project_root)
+    print(f"Working directory: {os.getcwd()}")
+    
     # Check if required files exist
     required_files = [
         'app.py',
@@ -51,9 +57,8 @@ def main():
     print("Press Ctrl+C to stop the server")
     print("-" * 50)
     
-    # Open browser after a short delay
     def open_browser():
-        time.sleep(2)  # Wait for server to start
+        time.sleep(2)  
         try:
             webbrowser.open('http://localhost:5001')
             print("Browser opened automatically")
@@ -64,8 +69,11 @@ def main():
     
     # Import and run Flask app
     try:
+        # Add the project root to Python path
+        sys.path.insert(0, project_root)
         from app import app
-        app.run(debug=True, host='0.0.0.0', port=5001, threaded=True)
+        # Run without debug mode to avoid restart issues
+        app.run(debug=False, host='0.0.0.0', port=5001, threaded=True)
     except KeyboardInterrupt:
         print("\n\nWebapp stopped. Goodbye!")
     except Exception as e:

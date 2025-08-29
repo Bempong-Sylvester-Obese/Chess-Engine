@@ -3,155 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Foundation Chess Engine</title>
-    <link rel="stylesheet" href="/chessboardjs-1/css/chessboard-1.0.0.min.css" />
-    <link rel="stylesheet" href="/style.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>♔ Foundation Chess Engine</title>
+    
+    <!-- External CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Chessboard.js -->
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1><i class="fas fa-chess-king"></i> Foundation Chess Engine</h1>
-            <p class="subtitle">Advanced Chess Analysis & Move Suggestions</p>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-chess-king"></i>
+                    <h1>Foundation Chess Engine</h1>
+                </div>
+                <div class="header-controls">
+                    <button class="btn btn-primary" onclick="resetGame()">
+                        <i class="fas fa-redo"></i> New Game
+                    </button>
+                    <button class="btn btn-secondary" onclick="flipBoard()">
+                        <i class="fas fa-sync"></i> Flip Board
+                    </button>
+                </div>
+            </div>
         </header>
 
-        <div class="game-container">
-            <div class="left-panel">
-                <div class="board-container">
-                    <div class="board-header">
-                        <h3><i class="fas fa-chess-board"></i> Game Board</h3>
-                        <div class="game-controls">
-                            <button class="btn btn-primary" onclick="resetGame()">
-                                <i class="fas fa-redo"></i> New Game
-                            </button>
-                            <button class="btn btn-secondary" onclick="flipBoard()">
-                                <i class="fas fa-sync"></i> Flip Board
-                            </button>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="game-layout">
+                <!-- Left Panel - Chess Board -->
+                <div class="board-panel">
+                    <div class="board-container">
+                        <div class="board-header">
+                            <h3><i class="fas fa-chess-board"></i> Game Board</h3>
+                            <div class="game-status">
+                                <span id="status-text" class="status-text">White to move</span>
+                            </div>
                         </div>
-                    </div>
-                    <div id="board"></div>
-                    <div class="game-status">
-                        <div id="status-indicator" class="status-indicator">
-                            <span class="status-text">White to move</span>
+                        <div id="board" class="chess-board"></div>
+                        <div class="board-footer">
+                            <div class="timer">
+                                <i class="fas fa-clock"></i>
+                                <span id="game-timer">00:00</span>
+                            </div>
+                            <div class="move-counter">
+                                <i class="fas fa-route"></i>
+                                <span id="move-count">0</span> moves
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="right-panel">
+                <!-- Right Panel - Analysis -->
                 <div class="analysis-panel">
-                    <div class="panel-section">
+                    <!-- Position Analysis -->
+                    <div class="analysis-section">
                         <h3><i class="fas fa-brain"></i> Position Analysis</h3>
-                        <div class="evaluation-display">
+                        <div class="evaluation-container">
                             <div class="eval-bar">
                                 <div id="eval-bar-fill" class="eval-bar-fill"></div>
                             </div>
-                            <div id="evaluation-text" class="evaluation-text">0.0</div>
+                            <div id="evaluation-text" class="evaluation-text">0.00</div>
                         </div>
-                        <div id="position-info" class="position-info">
-                            <div class="info-item">
-                                <span class="info-label">Check:</span>
-                                <span id="check-status" class="info-value">No</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Game Over:</span>
-                                <span id="game-over-status" class="info-value">No</span>
+                        <div class="position-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Check:</span>
+                                    <span id="check-status" class="info-value">No</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Game Over:</span>
+                                    <span id="game-over-status" class="info-value">No</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Turn:</span>
+                                    <span id="turn-indicator" class="info-value">White</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="panel-section">
-                        <h3><i class="fas fa-lightbulb"></i> Move Suggestions</h3>
+                    <!-- Move Suggestions -->
+                    <div class="analysis-section">
+                        <h3><i class="fas fa-lightbulb"></i> Top Moves</h3>
                         <div id="move-suggestions" class="move-suggestions">
-                            <div class="loading">Loading suggestions...</div>
+                            <div class="loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Analyzing position...
+                            </div>
                         </div>
                     </div>
 
-                    <div class="panel-section">
+                    <!-- Move History -->
+                    <div class="analysis-section">
                         <h3><i class="fas fa-history"></i> Move History</h3>
                         <div id="move-history" class="move-history">
-                            <div class="history-placeholder">No moves played yet</div>
+                            <div class="history-placeholder">
+                                <i class="fas fa-chess"></i>
+                                <p>No moves played yet</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
 
-        <div class="bottom-panel">
-            <div class="game-info">
-                <div class="info-card">
-                    <h4><i class="fas fa-clock"></i> Game Time</h4>
-                    <div id="game-timer" class="timer">00:00</div>
-                </div>
-                <div class="info-card">
-                    <h4><i class="fas fa-route"></i> Move Count</h4>
-                    <div id="move-count" class="move-count">0</div>
-                </div>
-                <div class="info-card">
-                    <h4><i class="fas fa-trophy"></i> Result</h4>
-                    <div id="game-result" class="game-result">In Progress</div>
-                </div>
-            </div>
-        </div>
+        <!-- Notifications Container -->
+        <div id="notifications" class="notifications-container"></div>
     </div>
 
-    <script src="/chessboardjs-1/js/chessboard-1.0.0.min.js"></script>
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
     <script>
+        // Global variables
         let board;
+        let game = new Chess();
         let gameStartTime = Date.now();
         let moveHistory = [];
-        let currentPosition = 'start';
+        let isGameOver = false;
 
         // Initialize the chessboard
         function initializeBoard() {
-            board = Chessboard('board', {
+            const config = {
                 draggable: true,
                 position: 'start',
-                pieceTheme: '/chessboardjs-1/img/chesspieces/wikipedia/{piece}.png',
-                onDrop: function (source, target, piece, newPos, oldPos, orientation) {
+                pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                onDrop: function(source, target, piece, newPos, oldPos, orientation) {
                     const move = source + target;
-                    makeMove(move, oldPos);
+                    return makeMove(move, oldPos);
                 },
                 onSnapEnd: function() {
-                    board.position(currentPosition);
+                    board.position(game.fen());
+                },
+                onLoad: function() {
+                    console.log('Chessboard loaded successfully');
                 }
-            });
+            };
+            
+            board = Chessboard('board', config);
+            board.resize();
+            
+            // Fallback piece theme if the main one fails
+            setTimeout(() => {
+                if (!document.querySelector('#board img')) {
+                    console.log('Falling back to alternative piece theme');
+                    board = Chessboard('board', {
+                        ...config,
+                        pieceTheme: 'https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png'
+                    });
+                    board.resize();
+                }
+            }, 2000);
         }
 
         // Make a move
         function makeMove(move, oldPos) {
-            fetch('/move', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ move: move })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'illegal') {
-                    showNotification('Illegal move!', 'error');
-                    board.position(oldPos);
-                } else {
-                    currentPosition = data.fen;
-                    board.position(currentPosition);
-                    updateGameState();
-                    getMoveSuggestions();
-                    updateMoveHistory(move);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('Error making move', 'error');
-                board.position(oldPos);
+            if (isGameOver) return false;
+
+            const moveResult = game.move({
+                from: move.substring(0, 2),
+                to: move.substring(2, 4),
+                promotion: 'q' // Always promote to queen for simplicity
             });
+
+            if (moveResult === null) {
+                return false; // Illegal move
+            }
+
+            // Update the board
+            board.position(game.fen());
+            
+            // Update game state
+            updateGameState();
+            updateMoveHistory(moveResult);
+            
+            // Get move suggestions
+            getMoveSuggestions();
+            
+            return true;
         }
 
-        // Get move suggestions
+        // Get move suggestions from the engine
         function getMoveSuggestions() {
             fetch('/suggest', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fen: currentPosition })
+                body: JSON.stringify({ fen: game.fen() })
             })
             .then(response => response.json())
             .then(data => {
@@ -159,54 +206,72 @@
             })
             .catch(error => {
                 console.error('Error getting suggestions:', error);
+                displayMoveSuggestions({ suggested_moves: [] });
             });
         }
 
         // Display move suggestions
         function displayMoveSuggestions(data) {
-            const suggestionsContainer = document.getElementById('move-suggestions');
+            const container = document.getElementById('move-suggestions');
             
             if (data.suggested_moves && data.suggested_moves.length > 0) {
                 let html = '';
-                data.suggested_moves.forEach((move, index) => {
+                data.suggested_moves.slice(0, 5).forEach((move, index) => {
                     const evalClass = move.evaluation > 0 ? 'positive' : 'negative';
+                    const evalText = move.evaluation > 0 ? `+${move.evaluation.toFixed(2)}` : move.evaluation.toFixed(2);
+                    
                     html += `
-                        <div class="suggestion-item">
-                            <div class="move-number">${index + 1}</div>
-                            <div class="move-details">
-                                <div class="move-san">${move.san}</div>
-                                <div class="move-eval ${evalClass}">${move.evaluation > 0 ? '+' : ''}${move.evaluation.toFixed(2)}</div>
-                            </div>
-                            <div class="move-comment">${move.comment}</div>
+                        <div class="suggestion-item" onclick="playSuggestion('${move.san}')">
+                            <div class="suggestion-rank">${index + 1}</div>
+                            <div class="suggestion-move">${move.san}</div>
+                            <div class="suggestion-eval ${evalClass}">${evalText}</div>
                         </div>
                     `;
                 });
-                suggestionsContainer.innerHTML = html;
+                container.innerHTML = html;
             } else {
-                suggestionsContainer.innerHTML = '<div class="no-suggestions">No moves available</div>';
+                container.innerHTML = `
+                    <div class="no-suggestions">
+                        <i class="fas fa-info-circle"></i>
+                        <p>No suggestions available</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Play a suggested move
+        function playSuggestion(san) {
+            const moves = game.moves({ verbose: true });
+            const move = moves.find(m => m.san === san);
+            
+            if (move) {
+                const moveString = move.from + move.to;
+                makeMove(moveString);
             }
         }
 
         // Update game state
         function updateGameState() {
-            fetch('/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fen: currentPosition })
-            })
-            .then(response => response.json())
-            .then(data => {
-                updateEvaluation(data.current_evaluation);
-                updatePositionInfo(data);
-                updateStatusIndicator(data);
-            })
-            .catch(error => {
-                console.error('Error updating game state:', error);
-            });
+            // Update evaluation
+            updateEvaluation();
+            
+            // Update position info
+            updatePositionInfo();
+            
+            // Update status
+            updateStatus();
+            
+            // Check for game over
+            if (game.isGameOver()) {
+                isGameOver = true;
+                handleGameOver();
+            }
         }
 
         // Update evaluation display
-        function updateEvaluation(evaluation) {
+        function updateEvaluation() {
+            // For now, use a simple evaluation based on material
+            const evaluation = calculateSimpleEvaluation();
             const evalText = document.getElementById('evaluation-text');
             const evalBarFill = document.getElementById('eval-bar-fill');
             
@@ -219,38 +284,79 @@
             evalBarFill.className = `eval-bar-fill ${evaluation > 0 ? 'positive' : 'negative'}`;
         }
 
-        // Update position information
-        function updatePositionInfo(data) {
-            document.getElementById('check-status').textContent = data.is_check ? 'Yes' : 'No';
-            document.getElementById('check-status').className = `info-value ${data.is_check ? 'warning' : ''}`;
+        // Simple material evaluation
+        function calculateSimpleEvaluation() {
+            const pieceValues = {
+                'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 0
+            };
             
-            const gameOver = data.is_checkmate || data.is_stalemate || data.is_insufficient_material;
+            let evaluation = 0;
+            const fen = game.fen().split(' ')[0];
+            
+            for (let char of fen) {
+                if (char === '/') continue;
+                if (char >= '1' && char <= '8') continue;
+                
+                const isWhite = char === char.toUpperCase();
+                const piece = char.toLowerCase();
+                const value = pieceValues[piece] || 0;
+                
+                evaluation += isWhite ? value : -value;
+            }
+            
+            return evaluation / 100; // Scale down for display
+        }
+
+        // Update position information
+        function updatePositionInfo() {
+            document.getElementById('check-status').textContent = game.isCheck() ? 'Yes' : 'No';
+            document.getElementById('check-status').className = `info-value ${game.isCheck() ? 'warning' : ''}`;
+            
+            const gameOver = game.isGameOver();
             document.getElementById('game-over-status').textContent = gameOver ? 'Yes' : 'No';
             document.getElementById('game-over-status').className = `info-value ${gameOver ? 'error' : ''}`;
+            
+            document.getElementById('turn-indicator').textContent = game.turn() === 'w' ? 'White' : 'Black';
         }
 
         // Update status indicator
-        function updateStatusIndicator(data) {
-            const statusText = document.querySelector('.status-text');
-            if (data.is_checkmate) {
+        function updateStatus() {
+            const statusText = document.getElementById('status-text');
+            
+            if (game.isCheckmate()) {
                 statusText.textContent = 'Checkmate!';
                 statusText.className = 'status-text checkmate';
-            } else if (data.is_stalemate) {
+            } else if (game.isDraw()) {
+                statusText.textContent = 'Draw!';
+                statusText.className = 'status-text draw';
+            } else if (game.isStalemate()) {
                 statusText.textContent = 'Stalemate!';
                 statusText.className = 'status-text stalemate';
-            } else if (data.is_check) {
+            } else if (game.isCheck()) {
                 statusText.textContent = 'Check!';
                 statusText.className = 'status-text check';
             } else {
-                statusText.textContent = 'White to move';
+                statusText.textContent = game.turn() === 'w' ? 'White to move' : 'Black to move';
                 statusText.className = 'status-text';
             }
+        }
+
+        // Handle game over
+        function handleGameOver() {
+            let result = '';
+            if (game.isCheckmate()) {
+                result = game.turn() === 'w' ? 'Black wins!' : 'White wins!';
+            } else if (game.isDraw()) {
+                result = 'Draw!';
+            }
+            
+            showNotification(result, 'info');
         }
 
         // Update move history
         function updateMoveHistory(move) {
             moveHistory.push(move);
-            const historyContainer = document.getElementById('move-history');
+            const container = document.getElementById('move-history');
             const moveCount = document.getElementById('move-count');
             
             moveCount.textContent = moveHistory.length;
@@ -265,34 +371,36 @@
                     html += `
                         <div class="history-move">
                             <span class="move-number">${moveNumber}.</span>
-                            <span class="move-text">${whiteMove}</span>
-                            ${blackMove ? `<span class="move-text">${blackMove}</span>` : ''}
+                            <span class="move-text">${whiteMove.san}</span>
+                            ${blackMove ? `<span class="move-text">${blackMove.san}</span>` : ''}
                         </div>
                     `;
                 }
-                historyContainer.innerHTML = html;
+                container.innerHTML = html;
+                container.scrollTop = container.scrollHeight;
             }
         }
 
         // Reset game
         function resetGame() {
-            fetch('/reset', { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    board.position('start');
-                    currentPosition = 'start';
-                    moveHistory = [];
-                    gameStartTime = Date.now();
-                    updateGameState();
-                    getMoveSuggestions();
-                    document.getElementById('move-history').innerHTML = '<div class="history-placeholder">No moves played yet</div>';
-                    document.getElementById('move-count').textContent = '0';
-                    showNotification('Game reset!', 'success');
-                })
-                .catch(error => {
-                    console.error('Error resetting game:', error);
-                    showNotification('Error resetting game', 'error');
-                });
+            game = new Chess();
+            board.position('start');
+            moveHistory = [];
+            gameStartTime = Date.now();
+            isGameOver = false;
+            
+            updateGameState();
+            getMoveSuggestions();
+            
+            document.getElementById('move-history').innerHTML = `
+                <div class="history-placeholder">
+                    <i class="fas fa-chess"></i>
+                    <p>No moves played yet</p>
+                </div>
+            `;
+            document.getElementById('move-count').textContent = '0';
+            
+            showNotification('New game started!', 'success');
         }
 
         // Flip board
@@ -303,13 +411,19 @@
 
         // Show notification
         function showNotification(message, type) {
+            const container = document.getElementById('notifications');
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(notification);
             
             setTimeout(() => {
-                notification.remove();
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
@@ -330,6 +444,11 @@
             
             // Update timer every second
             setInterval(updateTimer, 1000);
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (board) board.resize();
+            });
         });
     </script>
 </body>
