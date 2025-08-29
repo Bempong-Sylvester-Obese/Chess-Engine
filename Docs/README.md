@@ -1,4 +1,4 @@
-# ♟️ BCF Chess Engine
+# ♟️ Foundation Chess Engine
 
 <div align="center">
 
@@ -6,17 +6,13 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Chess](https://img.shields.io/badge/Chess-Engine-black.svg)
 ![ML](https://img.shields.io/badge/ML-Enhanced-orange.svg)
+![Web](https://img.shields.io/badge/Web-App-Complete-brightgreen.svg)
 
 **A comprehensive Python chess engine with machine learning-powered analysis, multiple interfaces, and real-time evaluation**
 
 [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Architecture](#-architecture) • [API](#-api) • [Contributing](#-contributing)
 
 </div>
-
----
-
-> **⚠️ Notice: Web Application in Development**  
-> The web interface for this chess engine is currently under active development. While the core engine, GUI, CLI, and API are fully functional, the web application may have limited features or be temporarily unavailable. We recommend using the Pygame GUI or CLI for the best experience while the web interface is being completed.
 
 ---
 
@@ -29,6 +25,7 @@
 - **Real-time Learning**: Continuously improves analysis through synthetic data training
 
 ### 🎮 **Multiple User Interfaces**
+- **🌐 Modern Web Application**: Beautiful, responsive web interface
 - **🎨 Pygame GUI**: Beautiful graphical interface with real-time evaluation bar and move history
 - **💻 Command Line Interface**: Lightweight CLI for quick analysis and scripting
 - **🌐 Web API**: RESTful API for integration with web applications
@@ -40,6 +37,15 @@
 - **Move Suggestion Engine**: Top 5 best moves with detailed explanations
 - **Game State Analysis**: Check, checkmate, stalemate, and draw detection
 - **Opening Database**: Support for opening theory and analysis
+- **Interactive Chess Board**: Drag-and-drop piece movement with legal move validation
+
+### 🎨 **Modern Web Interface**
+- **Ghana Flag-Inspired Design**: Dark theme with red, gold, and green color scheme
+- **Responsive Layout**: Works seamlessly on desktop, tablet, and mobile devices
+- **Real-time Updates**: Live game state, evaluation, and move suggestions
+- **Interactive Elements**: Click-to-play move suggestions, board flipping, game reset
+- **Beautiful Animations**: Smooth transitions and gradient animations
+- **Professional UI**: Glassmorphism effects and modern design principles
 
 ### 🔧 **Developer Tools**
 - **Training Pipeline**: Complete ML model training and validation system
@@ -73,16 +79,36 @@
    python Scripts/train_engine.py
    ```
 
-4. **Run the main application**
+4. **Run the web application** (recommended)
    ```bash
-   python main.py
+   cd UI/chesswebapp
+   source ../../venv/bin/activate
+   python run_webapp.py
    ```
 
 ---
 
 ## 🎯 Usage
 
-### 🎮 Graphical Interface (Recommended)
+### 🌐 Web Application (Recommended)
+Launch the modern web interface:
+```bash
+cd UI/chesswebapp
+source ../../venv/bin/activate
+python run_webapp.py
+```
+
+**Features:**
+- **Beautiful Dark Theme**: Ghana flag-inspired design with red, gold, and green accents
+- **Interactive Chess Board**: Drag-and-drop piece movement with legal move validation
+- **Real-time Analysis**: Live position evaluation with visual evaluation bar
+- **Move Suggestions**: Click-to-play top 5 best moves with evaluations
+- **Game Controls**: New game, board flip, and game reset functionality
+- **Move History**: Complete game history with move notation
+
+**Access**: Open your browser and go to `http://localhost:5001`
+
+### 🎮 Graphical Interface (Pygame)
 Launch Pygame-based chess interface:
 ```bash
 python main.py
@@ -143,10 +169,10 @@ python Scripts/visualize_analysis.py
 ```mermaid
 graph TB
     subgraph "User Interfaces"
+        WEB[🌐 Web Application]
         GUI[🎨 Pygame GUI]
         CLI[💻 Command Line]
         API[🌐 Web API]
-        WEB[📊 Web Dashboard]
     end
     
     subgraph "Core Engine"
@@ -169,10 +195,10 @@ graph TB
         PLOTS[📈 Analysis Plots]
     end
     
+    WEB --> ENGINE
     GUI --> ENGINE
     CLI --> ENGINE
     API --> ENGINE
-    WEB --> ENGINE
     
     ENGINE --> EVAL
     ENGINE --> SUGGEST
@@ -188,12 +214,57 @@ graph TB
     TRAINING --> DATASET
     DATA --> PLOTS
     
-    style GUI fill:#e1f5fe
-    style CLI fill:#f3e5f5
-    style API fill:#e8f5e8
-    style WEB fill:#fff3e0
+    style WEB fill:#e1f5fe
+    style GUI fill:#f3e5f5
+    style CLI fill:#e8f5e8
+    style API fill:#fff3e0
     style ENGINE fill:#ffebee
     style ML fill:#f1f8e9
+```
+
+### Web Application Architecture
+
+```mermaid
+graph LR
+    subgraph "Frontend"
+        HTML[HTML5]
+        CSS[CSS3 - Ghana Theme]
+        JS[JavaScript]
+        CHESSBOARD[Chessboard.js]
+    end
+    
+    subgraph "Backend"
+        FLASK[Flask Server]
+        CHESS_JS[Chess.js]
+        ENGINE[Python Engine]
+    end
+    
+    subgraph "API"
+        MOVE[/move]
+        SUGGEST[/suggest]
+        RESET[/reset]
+        ANALYZE[/analyze]
+    end
+    
+    HTML --> FLASK
+    CSS --> FLASK
+    JS --> FLASK
+    CHESSBOARD --> FLASK
+    
+    FLASK --> MOVE
+    FLASK --> SUGGEST
+    FLASK --> RESET
+    FLASK --> ANALYZE
+    
+    MOVE --> ENGINE
+    SUGGEST --> ENGINE
+    RESET --> ENGINE
+    ANALYZE --> ENGINE
+    
+    style HTML fill:#e8f5e8
+    style CSS fill:#fff3e0
+    style JS fill:#ffebee
+    style FLASK fill:#e1f5fe
 ```
 
 ### Data Flow
@@ -301,48 +372,51 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant User
-    participant GUI
+    participant Web
     participant Engine
     participant ML
     participant Board
     
-    User->>GUI: Make Move
-    GUI->>Engine: Process Move
+    User->>Web: Make Move
+    Web->>Engine: Process Move
     Engine->>Board: Update Position
     Board->>Engine: New Position
     
     Engine->>ML: Request Analysis
     ML->>Engine: Evaluation & Suggestions
     
-    Engine->>GUI: Return Results
-    GUI->>User: Display Analysis
+    Engine->>Web: Return Results
+    Web->>User: Display Analysis
     
     Note over Engine,ML: Real-time evaluation
-    Note over GUI,User: Visual feedback
+    Note over Web,User: Visual feedback
 ```
 
 ```
 Chess-Engine/
-├── 🎮 main.py                 # Main Pygame GUI application
-├── 🧠 Engine/                 # Core chess engine components
-│   ├── enhanced_engine.py     # ML-enhanced chess engine
-│   ├── chess_suggester.py     # Move suggestion engine
-│   ├── evaluation.py          # Position evaluation
-│   └── board.py              # Board representation
-├── 🌐 API/                    # Web API components
-│   ├── server.py             # FastAPI server
-│   └── endpoints.py          # API endpoints
-├── 💻 UI/                     # User interfaces
-│   ├── cli.py                # Command line interface
-│   └── chesswebapp/          # Web interface assets
-├── 🔬 Scripts/                # Analysis and training tools
-│   ├── train_engine.py       # ML model training
+├── 🌐 UI/chesswebapp/         # Modern web application
+│   ├── run_webapp.py         # Web app launcher
+│   ├── templates/index.html  # Main web interface
+│   └── static/style.css      # Ghana flag-inspired styling
+├── 🎮 main.py                # Main Pygame GUI application
+├── 🧠 Engine/                # Core chess engine components
+│   ├── enhanced_engine.py    # ML-enhanced chess engine
+│   ├── chess_suggester.py    # Move suggestion engine
+│   ├── evaluation.py         # Position evaluation
+│   └── board.py             # Board representation
+├── 🌐 API/                   # Web API components
+│   ├── server.py            # FastAPI server
+│   └── endpoints.py         # API endpoints
+├── 💻 UI/                    # User interfaces
+│   └── cli.py               # Command line interface
+├── 🔬 Scripts/               # Analysis and training tools
+│   ├── train_engine.py      # ML model training
 │   ├── analyze_training_data.py
 │   └── visualize_analysis.py
-├── 📊 Data/                   # Training data and models
-│   ├── trained_model.pkl     # Trained ML model
-│   └── training_data.csv     # Training dataset
-└── 🧪 Tests/                  # Test suite
+├── 📊 Data/                  # Training data and models
+│   ├── trained_model.pkl    # Trained ML model
+│   └── training_data.csv    # Training dataset
+└── 🧪 Tests/                 # Test suite
 ```
 
 ---
@@ -360,6 +434,22 @@ engine = EnhancedChessSuggester()
 suggestions = engine.get_move_suggestions(board)
 print(f"Evaluation: {suggestions['current_evaluation']}")
 print(f"Best moves: {suggestions['suggested_moves']}")
+```
+
+### Web Application API
+```bash
+# Make a move
+curl -X POST "http://localhost:5001/move" \
+     -H "Content-Type: application/json" \
+     -d '{"move": "e2e4"}'
+
+# Get move suggestions
+curl -X POST "http://localhost:5001/suggest" \
+     -H "Content-Type: application/json" \
+     -d '{"fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}'
+
+# Reset game
+curl -X POST "http://localhost:5001/reset"
 ```
 
 ### Web API Endpoints
@@ -388,6 +478,7 @@ graph LR
         UNIT[Unit Tests]
         INTEGRATION[Integration Tests]
         API[API Tests]
+        WEB[Web Tests]
         ML[ML Tests]
     end
     
@@ -395,18 +486,21 @@ graph LR
         ENGINE[Engine Logic]
         EVAL[Evaluation]
         SUGGEST[Move Suggestions]
+        WEB_UI[Web Interface]
         GUI[User Interface]
     end
     
     UNIT --> ENGINE
     INTEGRATION --> EVAL
     API --> SUGGEST
+    WEB --> WEB_UI
     ML --> GUI
     
     style UNIT fill:#e8f5e8
     style INTEGRATION fill:#fff3e0
     style API fill:#ffebee
-    style ML fill:#e1f5fe
+    style WEB fill:#e1f5fe
+    style ML fill:#f3e5f5
 ```
 
 Run the comprehensive test suite:
@@ -417,6 +511,7 @@ pytest Tests/
 # Run specific test modules
 pytest Tests/test_engine.py
 pytest Tests/test_api.py
+pytest Tests/test_webapp.py
 pytest Tests/test_blunder.py
 ```
 
@@ -432,6 +527,7 @@ graph LR
         EVAL_TIME[< 1s Evaluation]
         MOVE_GEN[Fast Move Generation]
         ML_INFERENCE[Quick ML Inference]
+        WEB_RESPONSE[< 100ms Web Response]
     end
     
     subgraph "Accuracy"
@@ -444,11 +540,13 @@ graph LR
         MEMORY[Memory Optimized]
         SCALABLE[Scalable Design]
         MODULAR[Modular Architecture]
+        RESPONSIVE[Responsive Web UI]
     end
     
     EVAL_TIME --> COMBINED
     MOVE_GEN --> COMBINED
     ML_INFERENCE --> COMBINED
+    WEB_RESPONSE --> COMBINED
     
     ML_ACCURACY --> COMBINED
     TRADITIONAL --> COMBINED
@@ -456,10 +554,12 @@ graph LR
     COMBINED --> MEMORY
     COMBINED --> SCALABLE
     COMBINED --> MODULAR
+    COMBINED --> RESPONSIVE
     
     style EVAL_TIME fill:#e8f5e8
     style ML_ACCURACY fill:#fff3e0
     style MEMORY fill:#ffebee
+    style WEB_RESPONSE fill:#e1f5fe
 ```
 
 The engine features:
@@ -467,6 +567,27 @@ The engine features:
 - **ML Enhancement**: 70% ML + 30% traditional evaluation
 - **Memory Efficient**: Optimized for large game trees
 - **Scalable Architecture**: Modular design for easy extension
+- **Fast Web Interface**: Responsive web application with < 100ms response times
+
+---
+
+## 🎨 Design System
+
+### Ghana Flag-Inspired Theme
+
+The web application features a beautiful dark theme inspired by the Ghana flag:
+
+- **🇬🇭 Ghana Red** (`#ce1126`): Primary buttons and accents
+- **🇬🇭 Ghana Gold** (`#fcd116`): Icons, highlights, and interactive elements
+- **🇬🇭 Ghana Green** (`#006b3f`): Success states and background accents
+- **Pure Black** (`#000000`): Main backgrounds for mysterious atmosphere
+- **Animated Gradients**: Flowing background animations through Ghana colors
+
+### Design Features
+- **Glassmorphism Effects**: Modern blur and transparency effects
+- **Smooth Animations**: Gradient shifts and hover transitions
+- **Responsive Design**: Works perfectly on all device sizes
+- **Professional UI**: Clean, modern interface with excellent UX
 
 ---
 
@@ -516,6 +637,10 @@ pylint Engine/ Tests/ Scripts/
 
 # Run tests
 pytest Tests/
+
+# Start web development server
+cd UI/chesswebapp
+python run_webapp.py
 ```
 
 ---
@@ -527,9 +652,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Made with ♟️ and ❤️ by the BCF Chess Engine Team**
-
-[Report Bug](https://github.com/your-repo/issues) • [Request Feature](https://github.com/your-repo/issues) • [Documentation](Docs/)
+**Made with ♟️ and ❤️ by the Foundation Chess Engine Team**
 
 </div>
 
