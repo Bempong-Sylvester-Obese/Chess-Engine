@@ -27,11 +27,11 @@ class ChessGame:
         self.small_font = pygame.font.Font(None, 18)
         self.large_font = pygame.font.Font(None, 32)
         
-        # Load chess piece images
+        # Chess piece images
         self.pieces = {}
         self.load_pieces()
         
-        # Initialize chess engines for analysis
+        # Initialize chess engines
         self.enhanced_engine = EnhancedChessSuggester()
         self.basic_engine = ChessSuggester()
         
@@ -45,7 +45,7 @@ class ChessGame:
         self.analysis_panel_x = 720
         self.analysis_panel_width = 280
         
-        # For animated evaluation bar
+        # Animated evaluation bar
         self.displayed_eval = 0.0
         self.eval_animation_speed = 0.15  # Higher = faster animation
         
@@ -57,7 +57,7 @@ class ChessGame:
             'P': 'wP.png', 'N': 'wN.png', 'B': 'wB.png', 'R': 'wR.png', 'Q': 'wQ.png', 'K': 'wK.png',
             'p': 'bP.png', 'n': 'bN.png', 'b': 'bB.png', 'r': 'bR.png', 'q': 'bQ.png', 'k': 'bK.png',
         }
-        # Use the Wikipedia set from chessboardjs-1
+        # Use Wikipedia set from chessboardjs-1
         base_path = pathlib.Path(__file__).parent / 'UI' / 'chesswebapp' / 'static' / 'chessboardjs-1' / 'img' / 'chesspieces' / 'wikipedia'
         for symbol, filename in piece_image_map.items():
             try:
@@ -80,12 +80,12 @@ class ChessGame:
     
     def get_square_from_pos(self, pos: Tuple[int, int]) -> Optional[int]:
         x, y = pos
-        # Only process clicks within the chess board area
+        # Process clicks within the chess board area
         if x >= self.square_size * 8:
             return None
             
         file_idx = x // self.square_size
-        rank_idx = 7 - (y // self.square_size)  # Flip because chess ranks are bottom-to-top
+        rank_idx = 7 - (y // self.square_size)  # Flip: Chess ranks from bottom-to-top
         
         if 0 <= file_idx < 8 and 0 <= rank_idx < 8:
             return chess.square(file_idx, rank_idx)
@@ -102,11 +102,11 @@ class ChessGame:
         file_idx = chess.square_file(square)
         rank_idx = 7 - chess.square_rank(square)
         
-        # Create a semi-transparent surface for highlighting
+        # Semi-transparent surface for highlighting
         highlight = pygame.Surface((self.square_size, self.square_size), pygame.SRCALPHA)
         pygame.draw.rect(highlight, color, highlight.get_rect())
         
-        # Draw the highlight
+        # Highlight
         self.screen.blit(highlight, (file_idx * self.square_size, rank_idx * self.square_size))
         
     def draw_board(self):
@@ -124,7 +124,7 @@ class ChessGame:
                 )
                 
                 # Draw piece if present
-                square = chess.square(col, 7-row)  # Flip row because chess ranks are bottom-to-top
+                square = chess.square(col, 7-row)  # Flip row: chess ranks from bottom-to-top
                 piece = self.board.piece_at(square)
                 if piece:
                     symbol = piece.symbol()
@@ -132,14 +132,14 @@ class ChessGame:
                     if piece_surface:
                         self.screen.blit(piece_surface, (col * self.square_size, row * self.square_size))
                 
-                # Draw rank (1-8) on the left edge of each row
+                # Rank (1-8) on the left edge of each row
                 if col == 0:
                     rank_num = str(8 - row)
                     rank_font = self.small_font
                     rank_color = (80, 80, 80)
                     rank_surf = rank_font.render(rank_num, True, rank_color)
                     self.screen.blit(rank_surf, (4, row * self.square_size + 4))
-                # Draw file (a-h) on the bottom edge of each column
+                #  File (a-h) on the bottom edge of each column
                 if row == 7:
                     file_letter = chr(ord('a') + col)
                     file_font = self.small_font
