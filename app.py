@@ -2,19 +2,26 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import chess
 import os
 import sys
-
-# Add the Engine directory to the path
-sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
-
 from chess_suggester import ChessSuggester
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
 
 app = Flask(__name__, 
            static_folder='UI/chesswebapp/static',
            template_folder='UI/chesswebapp/templates')
 
 # Initialize board and chess suggester
+# Note: In production, these should be per-request instances to avoid state issues
 board = chess.Board()
 chess_suggester = ChessSuggester()
+
+# CORS headers for frontend
+@app.after_request
+def after_request(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    return response
 
 @app.route('/')
 def index():
@@ -27,24 +34,26 @@ def test_static():
 
 @app.route('/move', methods=['POST'])
 def move():
-    global board
     try:
         if not request.is_json or request.json is None:
             return jsonify({'status': 'error', 'message': 'Invalid or missing JSON'}), 400
         
         move_uci = request.json.get('move')
+        fen = request.json.get('fen', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+        
         if not move_uci:
             return jsonify({'status': 'error', 'message': 'No move provided'}), 400
+            
+        temp_board = chess.Board(fen)
         
-        # Validate UCI format
         if len(move_uci) != 4:
             return jsonify({'status': 'error', 'message': 'Invalid move format'}), 400
         
         move = chess.Move.from_uci(move_uci)
 
-        if move in board.legal_moves:
-            board.push(move)
-            return jsonify({'status': 'ok', 'fen': board.fen()})
+        if move in temp_board.legal_moves:
+            temp_board.push(move)
+            return jsonify({'status': 'ok', 'fen': temp_board.fen()})
         else:
             return jsonify({'status': 'illegal'})
     except Exception as e:
@@ -52,10 +61,9 @@ def move():
 
 @app.route('/reset', methods=['POST'])
 def reset():
-    global board
     try:
-        board.reset()
-        return jsonify({'status': 'reset', 'fen': board.fen()})
+        temp_board = chess.Board()
+        return jsonify({'status': 'reset', 'fen': temp_board.fen()})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
@@ -65,12 +73,10 @@ def suggest_moves():
         if not request.is_json or request.json is None:
             return jsonify({'status': 'error', 'message': 'Invalid or missing JSON'}), 400
         
-        fen = request.json.get('fen', board.fen())
+        fen = request.json.get('fen', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
         
-        # Create a temporary board with the given position
         temp_board = chess.Board(fen)
         
-        # Get move suggestions
         suggestions = chess_suggester.get_move_suggestions(temp_board)
         
         return jsonify(suggestions)
@@ -83,12 +89,10 @@ def analyze_position():
         if not request.is_json or request.json is None:
             return jsonify({'status': 'error', 'message': 'Invalid or missing JSON'}), 400
         
-        fen = request.json.get('fen', board.fen())
+        fen = request.json.get('fen', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
         
-        # Create a temporary board with the given position
         temp_board = chess.Board(fen)
         
-        # Get position analysis
         analysis = chess_suggester.get_move_suggestions(temp_board)
         
         return jsonify(analysis)
@@ -97,19 +101,18 @@ def analyze_position():
 
 @app.route('/position', methods=['GET'])
 def get_position():
-    """Get current board position"""
     try:
+        temp_board = chess.Board()
         return jsonify({
-            'fen': board.fen(),
-            'is_check': board.is_check(),
-            'is_checkmate': board.is_checkmate(),
-            'is_stalemate': board.is_stalemate(),
-            'is_insufficient_material': board.is_insufficient_material(),
-            'turn': 'white' if board.turn else 'black'
+            'fen': temp_board.fen(),
+            'is_check': temp_board.is_check(),
+            'is_checkmate': temp_board.is_checkmate(),
+            'is_stalemate': temp_board.is_stalemate(),
+            'is_insufficient_material': temp_board.is_insufficient_material(),
+            'turn': 'white' if temp_board.turn else 'black'
         })
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
-    # Use a more efficient configuration for development
     app.run(debug=True, host='0.0.0.0', port=5001, threaded=True)
