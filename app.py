@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, send_from_directory
 import chess
 import os
 import sys
-from chess_suggester import ChessSuggester
+from Engine.chess_suggester import ChessSuggester
 
 sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
 
