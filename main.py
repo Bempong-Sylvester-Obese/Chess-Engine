@@ -5,11 +5,10 @@ import os
 from typing import Optional, List, Tuple, cast, Literal
 from PIL import Image, ImageDraw
 import pathlib
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
-
 from Engine.enhanced_engine import EnhancedChessSuggester
 from Engine.chess_suggester import ChessSuggester
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'Engine'))
 
 class ChessGame:
     def __init__(self):
@@ -17,7 +16,6 @@ class ChessGame:
         self.screen_size = (1000, 800)  
         self.square_size = 700 // 8 
         
-        # Initialize Pygame
         pygame.init()
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption("Chess Engine with Real-time Analysis")

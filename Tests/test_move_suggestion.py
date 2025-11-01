@@ -1,12 +1,11 @@
 import chess
-from move_suggestion import MoveSuggester
+from Engine.move_suggestion import MoveSuggester
 
 def main():
     board = chess.Board()
     suggester = MoveSuggester()
     suggestions = suggester.get_move_suggestions(board)
     
-    # Print the suggestions
     print(f"Current evaluation: {suggestions['current_evaluation']:.2f}")
     print(f"Check: {suggestions['is_check']}")
     print(f"Checkmate: {suggestions['is_checkmate']}")

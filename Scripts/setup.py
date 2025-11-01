@@ -5,7 +5,9 @@ import platform
 from pathlib import Path
 
 def check_python_version():
-    if sys.version_info < (3, 8):
+    """Check if Python version is 3.8 or higher."""
+    min_version = (3, 8)
+    if sys.version_info < min_version:
         print("Error: Python 3.8 or higher is required")
         sys.exit(1)
 

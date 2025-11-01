@@ -4,12 +4,11 @@ import numpy as np
 import sys
 import os
 import time
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
 from Engine.move_suggestion import MoveSuggester
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def extract_features(board):
     features = []

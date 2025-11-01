@@ -1,17 +1,15 @@
 import chess
-from move_suggestion import MoveSuggester
+import sys
+import os
+from Engine.move_suggestion import MoveSuggester
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def main():
-    # Create a chess board
     board = chess.Board()
-    
-    # Create the move suggester
     suggester = MoveSuggester()
-    
-    # Get move suggestions
     suggestions = suggester.get_move_suggestions(board)
     
-    # Print the suggestions
     print(f"Current evaluation: {suggestions['current_evaluation']:.2f}")
     print(f"Check: {suggestions['is_check']}")
     print(f"Checkmate: {suggestions['is_checkmate']}")

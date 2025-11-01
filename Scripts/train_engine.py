@@ -7,11 +7,10 @@ import pickle
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def extract_features(board):
     features = []

@@ -23,4 +23,4 @@ def test_evaluate():
 if __name__ == "__main__":
     test_status()
     test_evaluate()
-    print("✅ All API tests passed!")
+    print("All API tests passed!")

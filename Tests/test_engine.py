@@ -4,12 +4,11 @@ import pandas as pd
 import numpy as np
 import sys
 import os
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
 from Engine.move_suggestion import MoveSuggester
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class TestChessEngine(unittest.TestCase):
     
@@ -30,14 +29,13 @@ class TestChessEngine(unittest.TestCase):
         self.assertAlmostEqual(eval_score, 0.0, places=1)  # Initial position should be roughly equal
     
     def test_material_evaluation(self):
-        # Test a position with a pawn advantage
         self.board = chess.Board('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1')
         eval_score = evaluate_position(self.board)
-        self.assertGreater(eval_score, 0)  # White should be better
+        self.assertGreater(eval_score, 0) 
         self.board = chess.Board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1') #position with queen advantage
-        self.board.remove_piece_at(chess.E4)  # Remove a pawn
+        self.board.remove_piece_at(chess.E4) 
         eval_score = evaluate_position(self.board)
-        self.assertLess(eval_score, 0)  # Black should be better
+        self.assertLess(eval_score, 0) 
     
     def test_move_suggestions(self):
         suggestions = self.move_suggester.suggest_moves(self.board)
