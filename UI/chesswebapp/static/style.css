@@ -566,6 +566,32 @@ body {
     filter: brightness(1.1);
 }
 
+/* Smooth piece movement transitions */
+.square-55d63 img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+/* Smooth drag and drop */
+.white-1e1d7, .black-3c85d {
+    transition: transform 0.1s ease-out;
+}
+
+/* Highlight valid moves with smooth animation */
+circle {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0.6;
+}
+
+circle:hover {
+    opacity: 0.8;
+}
+
 .highlight1-32417 {
     background-color: rgba(255, 255, 0, 0.4) !important;
 }
@@ -576,12 +602,6 @@ body {
 
 .selected-35767 {
     background-color: rgba(255, 255, 0, 0.6) !important;
-}
-
-.square-55d63 img {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
 }
 
 .chess-board {

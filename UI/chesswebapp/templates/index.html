@@ -122,6 +122,22 @@
         let gameStartTime = Date.now();
         let moveHistory = [];
         let isGameOver = false;
+        let validMoves = [];
+        let draggedFromSquare = null;
+
+        // Get valid moves for a square
+        function getValidMovesForSquare(square) {
+            const moves = game.moves({ square: square, verbose: true });
+            return moves.map(m => m.to);
+        }
+
+        // Check if a square has a piece of the current player
+        function isCurrentPlayerPiece(square) {
+            const piece = game.get(square);
+            if (!piece) return false;
+            const isWhite = piece.color === 'w';
+            return game.turn() === 'w' ? isWhite : !isWhite;
+        }
 
         // Initialize the chessboard
         function initializeBoard() {
@@ -129,11 +145,49 @@
                 draggable: true,
                 position: 'start',
                 pieceTheme: 'https://chessboardjs.com/img/chesspieces/wikipedia/{piece}.png',
+                onDragStart: function(source, piece, position, orientation) {
+                    // Prevent dragging if game is over
+                    if (isGameOver) return false;
+                    
+                    // Prevent dragging opponent's pieces
+                    if (!isCurrentPlayerPiece(source)) {
+                        return false;
+                    }
+                    
+                    // Clear any previous highlights
+                    removeHighlights();
+                    
+                    // Store the source square and get valid moves
+                    draggedFromSquare = source;
+                    validMoves = getValidMovesForSquare(source);
+                    
+                    // Highlight valid target squares
+                    highlightValidMoves(validMoves);
+                    
+                    return true;
+                },
                 onDrop: function(source, target, piece, newPos, oldPos, orientation) {
-                    const move = source + target;
-                    return makeMove(move, oldPos);
+                    // Remove highlights
+                    removeHighlights();
+                    
+                    // If dropped on the same square, just return true to allow snapback
+                    if (source === target) {
+                        draggedFromSquare = null;
+                        validMoves = [];
+                        return true;
+                    }
+                    
+                    // Try to make the move
+                    const moveResult = makeMove(source, target, oldPos);
+                    
+                    // Reset drag state
+                    draggedFromSquare = null;
+                    validMoves = [];
+                    
+                    return moveResult;
                 },
                 onSnapEnd: function() {
+                    // Only update position if the game state has changed
                     board.position(game.fen());
                 },
                 onLoad: function() {
@@ -157,29 +211,56 @@
             }, 2000);
         }
 
+        // Highlight valid target squares
+        function highlightValidMoves(squares) {
+            squares.forEach(square => {
+                board.addCircle(square);
+            });
+        }
+
+        // Remove all highlights
+        function removeHighlights() {
+            // Clear all circles (valid move highlights) - chessboard.js adds SVG circles
+            const boardEl = document.getElementById('board');
+            if (boardEl) {
+                // Remove circles from SVG elements
+                const svgElements = boardEl.querySelectorAll('svg');
+                svgElements.forEach(svg => {
+                    const circles = svg.querySelectorAll('circle');
+                    circles.forEach(circle => circle.remove());
+                });
+                // Also check for circles directly in the board element
+                const circles = boardEl.querySelectorAll('circle');
+                circles.forEach(circle => circle.remove());
+            }
+        }
+
         // Make a move
-        function makeMove(move, oldPos) {
+        function makeMove(source, target, oldPos) {
             if (isGameOver) return false;
 
+            // Validate move before attempting
+            const moveString = source + target;
             const moveResult = game.move({
-                from: move.substring(0, 2),
-                to: move.substring(2, 4),
+                from: source,
+                to: target,
                 promotion: 'q' // Always promote to queen for simplicity
             });
 
             if (moveResult === null) {
-                return false; // Illegal move
+                // Illegal move - return false to snap back, but do it smoothly
+                return false;
             }
 
-            // Update the board
+            // Update the board position smoothly
             board.position(game.fen());
             
-            // Update game state
-            updateGameState();
-            updateMoveHistory(moveResult);
-            
-            // Get move suggestions
-            getMoveSuggestions();
+            // Update game state asynchronously to avoid blocking UI
+            setTimeout(() => {
+                updateGameState();
+                updateMoveHistory(moveResult);
+                getMoveSuggestions();
+            }, 0);
             
             return true;
         }
@@ -235,8 +316,14 @@
             const move = moves.find(m => m.san === san);
             
             if (move) {
-                const moveString = move.from + move.to;
-                makeMove(moveString);
+                // Remove any existing highlights
+                removeHighlights();
+                // Make the move using the new signature
+                const moveResult = makeMove(move.from, move.to, null);
+                if (moveResult) {
+                    // Update board position
+                    board.position(game.fen());
+                }
             }
         }
 
@@ -373,11 +460,16 @@
 
         // Reset game
         function resetGame() {
+            // Remove any highlights
+            removeHighlights();
+            
             game = new Chess();
             board.position('start');
             moveHistory = [];
             gameStartTime = Date.now();
             isGameOver = false;
+            validMoves = [];
+            draggedFromSquare = null;
             
             updateGameState();
             getMoveSuggestions();
