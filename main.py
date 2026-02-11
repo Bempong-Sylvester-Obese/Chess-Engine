@@ -1,5 +1,6 @@
 import chess
 import pygame
+from pygame._freetype import Font as FreeTypeFont, init as freetype_init
 import sys
 import os
 from typing import Optional, List, Tuple
@@ -20,10 +21,11 @@ class ChessGame:
         self.screen = pygame.display.set_mode(self.screen_size)
         pygame.display.set_caption("Chess Engine with Real-time Analysis")
         
-        # Initialize fonts for analysis display
-        self.font = pygame.font.Font(None, 24)
-        self.small_font = pygame.font.Font(None, 18)
-        self.large_font = pygame.font.Font(None, 32)
+        # Use _freetype directly (avoids pygame.font/sysfont circular import on Python 3.13)
+        freetype_init()
+        self.font = FreeTypeFont(None, 24)
+        self.small_font = FreeTypeFont(None, 18)
+        self.large_font = FreeTypeFont(None, 32)
         
         # Chess piece images
         self.pieces = {}
@@ -135,14 +137,14 @@ class ChessGame:
                     rank_num = str(8 - row)
                     rank_font = self.small_font
                     rank_color = (80, 80, 80)
-                    rank_surf = rank_font.render(rank_num, True, rank_color)
+                    rank_surf, _ = rank_font.render(rank_num, fgcolor=rank_color)
                     self.screen.blit(rank_surf, (4, row * self.square_size + 4))
                 #  File (a-h) on the bottom edge of each column
                 if row == 7:
                     file_letter = chr(ord('a') + col)
                     file_font = self.small_font
                     file_color = (80, 80, 80)
-                    file_surf = file_font.render(file_letter, True, file_color)
+                    file_surf, _ = file_font.render(file_letter, fgcolor=file_color)
                     self.screen.blit(file_surf, (col * self.square_size + self.square_size - 18, self.square_size * 8 - 20))
         
         # Highlight selected square
@@ -163,7 +165,7 @@ class ChessGame:
         # Draw avatar placeholder (circle with initials)
         avatar_center = (panel_x + panel_width // 2, y_offset + 40)
         pygame.draw.circle(self.screen, (200, 150, 100), avatar_center, 40)
-        initials = self.large_font.render('P', True, (255, 255, 255))
+        initials, _ = self.large_font.render('P', fgcolor=(255, 255, 255))
         initials_rect = initials.get_rect(center=avatar_center)
         self.screen.blit(initials, initials_rect)
         y_offset += 90
@@ -219,15 +221,15 @@ class ChessGame:
 
         # Draw numeric evaluation overlay (to the right of the bar, aligned with boundary)
         eval_text = f"{capped_eval:+.2f}"
-        eval_render = self.large_font.render(eval_text, True, (40, 120, 255))
+        eval_render, _ = self.large_font.render(eval_text, fgcolor=(40, 120, 255))
         # Position: right of the bar, vertically at the boundary (clamp to bar edges)
         eval_y = bar_y + min(max(white_height, 0), bar_height - 1)
         eval_rect = eval_render.get_rect(midleft=(bar_x + bar_width + 16, eval_y))
         self.screen.blit(eval_render, eval_rect)
 
         # Draw W/B labels
-        w_label = self.small_font.render('W', True, (255, 255, 255))
-        b_label = self.small_font.render('B', True, (0, 0, 0))
+        w_label, _ = self.small_font.render('W', fgcolor=(255, 255, 255))
+        b_label, _ = self.small_font.render('B', fgcolor=(0, 0, 0))
         self.screen.blit(w_label, (bar_x + bar_width + 8, bar_y - 5))
         self.screen.blit(b_label, (bar_x + bar_width + 8, bar_y + bar_height - 15))
         y_offset += bar_height + 30
@@ -245,7 +247,7 @@ class ChessGame:
             ])
             material_imbalance = white_material - black_material
             material_text = f"Material: W {white_material:.1f} / B {black_material:.1f} (Δ {material_imbalance:+.1f})"
-            material_render = self.font.render(material_text, True, (220, 220, 220))
+            material_render, _ = self.font.render(material_text, fgcolor=(220, 220, 220))
             self.screen.blit(material_render, (panel_x + 20, y_offset))
             y_offset += 28
 
@@ -253,7 +255,7 @@ class ChessGame:
             white_mobility = len([m for m in self.board.legal_moves if self.board.turn]) if self.board.turn else len([m for m in self.board.legal_moves if not self.board.turn])
             black_mobility = len([m for m in self.board.legal_moves if not self.board.turn]) if self.board.turn else len([m for m in self.board.legal_moves if self.board.turn])
             mobility_text = f"Mobility: W {white_mobility} / B {black_mobility}"
-            mobility_render = self.font.render(mobility_text, True, (200, 200, 200))
+            mobility_render, _ = self.font.render(mobility_text, fgcolor=(200, 200, 200))
             self.screen.blit(mobility_render, (panel_x + 20, y_offset))
             y_offset += 24
 
@@ -263,7 +265,7 @@ class ChessGame:
             wk_dist = abs(3.5 - chess.square_file(wk_sq)) + abs(3.5 - chess.square_rank(wk_sq)) if wk_sq is not None else 0
             bk_dist = abs(3.5 - chess.square_file(bk_sq)) + abs(3.5 - chess.square_rank(bk_sq)) if bk_sq is not None else 0
             king_safety_text = f"King Center Dist: W {wk_dist:.1f} / B {bk_dist:.1f}"
-            king_safety_render = self.font.render(king_safety_text, True, (180, 180, 255))
+            king_safety_render, _ = self.font.render(king_safety_text, fgcolor=(180, 180, 255))
             self.screen.blit(king_safety_render, (panel_x + 20, y_offset))
             y_offset += 24
 
@@ -271,7 +273,7 @@ class ChessGame:
             doubled_white = sum([max(0, len(self.board.pieces(chess.PAWN, chess.WHITE) & chess.BB_FILES[file]) - 1) for file in range(8)])
             doubled_black = sum([max(0, len(self.board.pieces(chess.PAWN, chess.BLACK) & chess.BB_FILES[file]) - 1) for file in range(8)])
             pawn_structure_text = f"Doubled Pawns: W {doubled_white} / B {doubled_black}"
-            pawn_structure_render = self.font.render(pawn_structure_text, True, (200, 180, 180))
+            pawn_structure_render, _ = self.font.render(pawn_structure_text, fgcolor=(200, 180, 180))
             self.screen.blit(pawn_structure_render, (panel_x + 20, y_offset))
             y_offset += 24
 
@@ -284,7 +286,7 @@ class ChessGame:
             else:
                 phase = "Endgame"
             phase_text = f"Game Phase: {phase}"
-            phase_render = self.font.render(phase_text, True, (180, 255, 180))
+            phase_render, _ = self.font.render(phase_text, fgcolor=(180, 255, 180))
             self.screen.blit(phase_render, (panel_x + 20, y_offset))
             y_offset += 28
 
@@ -297,12 +299,12 @@ class ChessGame:
             else:
                 assessment = "Equal position"
             assessment_text = f"Assessment: {assessment}"
-            assessment_render = self.font.render(assessment_text, True, (255, 220, 120))
+            assessment_render, _ = self.font.render(assessment_text, fgcolor=(255, 220, 120))
             self.screen.blit(assessment_render, (panel_x + 20, y_offset))
             y_offset += 32
 
         # Draw move list header
-        header = self.font.render(' ', True, (255, 255, 255))
+        header, _ = self.font.render(' ', fgcolor=(255, 255, 255))
         self.screen.blit(header, (panel_x + 30, y_offset))
         y_offset += 10
 
@@ -319,11 +321,11 @@ class ChessGame:
             highlight = (i == len(moves)-2) or (i+1 == len(moves)-1)
             font1 = self.large_font if highlight and i == len(moves)-2 else self.font
             font2 = self.large_font if highlight and i+1 == len(moves)-1 else self.font
-            move_num_text = self.small_font.render(f'{move_num}.', True, (180, 180, 180))
+            move_num_text, _ = self.small_font.render(f'{move_num}.', fgcolor=(180, 180, 180))
             self.screen.blit(move_num_text, (col1_x - 25, y_offset + (i//2)*row_height))
-            move1_text = font1.render(move1, True, (255, 255, 255))
+            move1_text, _ = font1.render(move1, fgcolor=(255, 255, 255))
             self.screen.blit(move1_text, (col1_x, y_offset + (i//2)*row_height))
-            move2_text = font2.render(move2, True, (255, 255, 255))
+            move2_text, _ = font2.render(move2, fgcolor=(255, 255, 255))
             self.screen.blit(move2_text, (col2_x, y_offset + (i//2)*row_height))
 
     def handle_click(self, pos: tuple[int, int]) -> Optional[chess.Move]:
