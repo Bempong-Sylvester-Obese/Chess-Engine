@@ -1,0 +1,241 @@
+# Chess Engine Codebase Rules
+
+## Project Overview
+
+This is a comprehensive Python chess engine with machine learning-powered analysis, multiple user interfaces (web, GUI, CLI), and REST API support. The engine provides real-time position evaluation, move suggestions, and game analysis.
+
+## Project Structure
+
+```
+Chess-Engine/
+├── Engine/                    # Core chess engine components
+│   ├── chess_suggester.py     # Basic move suggestion engine (material-based)
+│   ├── enhanced_engine.py     # ML-enhanced engine (combines ML model + material eval)
+│   ├── evaluation.py          # Position evaluation (uses Stockfish if available)
+│   ├── board.py               # Board wrapper class with move history
+│   └── __init__.py
+├── API/                        # REST API components
+│   ├── server.py              # FastAPI server setup
+│   ├── endpoints.py           # API route handlers
+│   └── __init__.py
+├── UI/                         # User interfaces
+│   ├── chesswebapp/           # Flask web application
+│   │   ├── run_webapp.py      # Web app launcher
+│   │   ├── templates/         # HTML templates
+│   │   └── static/            # CSS, JS, images
+│   ├── cli.py                 # Command-line interface
+│   ├── gui.py                 # Tkinter GUI (alternative to pygame)
+│   └── __init__.py
+├── Scripts/                    # Utility and training scripts
+│   ├── train_engine.py       # ML model training
+│   ├── analyze_training_data.py
+│   ├── generate_synthetic_data.py
+│   ├── visualize_analysis.py
+│   ├── integrate_model.py
+│   └── run_pipeline.py
+├── Tests/                      # Test suite
+│   ├── test_engine.py
+│   ├── test_chess_suggester.py
+│   ├── test_api.py
+│   ├── test_blunder.py
+│   └── test_analysis_integration.py
+├── Data/                       # Training data and models
+│   ├── trained_model.pkl      # Trained ML model
+│   ├── training_data.csv      # Training dataset
+│   └── plots/                  # Generated analysis plots
+├── Docs/                       # Documentation
+│   ├── README.md
+│   └── ANALYSIS_FEATURES.md
+├── app.py                      # Flask web application entry point
+├── main.py                     # Pygame GUI entry point
+├── wsgi.py                     # WSGI entry point for deployment
+├── requirements.txt            # Python dependencies
+└── vercel.json                 # Vercel deployment config
+```
+
+## Key Components
+
+### Engine Components
+
+1. **ChessSuggester** (`Engine/chess_suggester.py`)
+   - Basic move suggestion engine using material evaluation
+   - Provides `evaluate_position()`, `suggest_moves()`, `get_move_suggestions()`
+   - Base class for enhanced engines
+
+2. **EnhancedChessSuggester** (`Engine/enhanced_engine.py`)
+   - Extends `ChessSuggester` with ML model integration
+   - Combines ML predictions (70%) with material evaluation (30%)
+   - Loads trained model from `Data/trained_model.pkl`
+
+3. **PositionEvaluator** (`Engine/evaluation.py`)
+   - Uses Stockfish engine if available, falls back to material evaluation
+   - Provides `evaluate_position()` and `get_best_move()` functions
+   - Global evaluator instance for efficiency
+
+4. **Board** (`Engine/board.py`)
+   - Wrapper around `chess.Board` with move history tracking
+   - Provides convenience methods for game state queries
+
+### User Interfaces
+
+1. **Web Application** (`app.py` + `UI/chesswebapp/`)
+   - Flask-based web interface
+   - Uses Chessboard.js for board rendering
+   - Real-time move suggestions and evaluation
+   - Run with: `python UI/chesswebapp/run_webapp.py` or `python app.py`
+
+2. **Pygame GUI** (`main.py`)
+   - Graphical interface with pygame
+   - Real-time evaluation bar and analysis panel
+   - Run with: `python main.py`
+
+3. **CLI** (`UI/cli.py`)
+   - Command-line interface for quick analysis
+   - ASCII board display
+   - Run with: `python UI/cli.py`
+
+4. **Tkinter GUI** (`UI/gui.py`)
+   - Alternative GUI using Tkinter
+   - Run with: `python UI/gui.py`
+
+### API
+
+- **FastAPI Server** (`API/server.py`)
+  - REST API for chess engine operations
+  - Endpoints: `/api/v1/move`, `/api/v1/state`, `/api/v1/best-move`, `/api/v1/reset`
+  - Run with: `python API/server.py`
+
+## Entry Points
+
+- **Web App**: `python app.py` (Flask) or `python UI/chesswebapp/run_webapp.py`
+- **Pygame GUI**: `python main.py`
+- **CLI**: `python UI/cli.py`
+- **FastAPI**: `python API/server.py`
+- **WSGI**: `wsgi.py` (for deployment)
+
+## Coding Conventions
+
+### Import Organization
+- Standard library imports first
+- Third-party imports second
+- Local imports last
+- Use absolute imports from project root when possible
+
+### Class Naming
+- Use PascalCase for classes: `ChessSuggester`, `EnhancedChessSuggester`
+- Use descriptive names that indicate purpose
+
+### Function Naming
+- Use snake_case for functions: `evaluate_position()`, `get_move_suggestions()`
+- Use verb-noun pattern: `get_*`, `evaluate_*`, `suggest_*`
+
+### File Organization
+- One main class per file (when possible)
+- Keep related functionality together
+- Separate concerns: engine logic, UI, API, scripts
+
+### Error Handling
+- Use try-except blocks for external dependencies (Stockfish, file I/O)
+- Return meaningful error messages
+- Log warnings for fallback scenarios
+- Never fail silently - always provide feedback
+
+### State Management
+- **Flask App**: Create engine instances per request (avoid global state)
+- **API**: Use module-level board instance but reset properly
+- **GUI**: Maintain game state in class instances
+
+## Dependencies
+
+### Core Dependencies
+- `python-chess>=1.999.0` - Chess logic and board representation
+- `Flask>=2.3.0` - Web application framework
+- `gunicorn>=21.2.0` - WSGI HTTP server
+
+### Optional Dependencies
+- `fastapi` - REST API framework
+- `uvicorn` - ASGI server for FastAPI
+- `pygame` - GUI framework (for main.py)
+- `pillow` (PIL) - Image processing
+- `numpy` - Numerical computations
+- `pandas` - Data analysis
+- `scikit-learn` - Machine learning
+- `matplotlib` - Plotting
+- `seaborn` - Statistical visualization
+
+### External Tools
+- **Stockfish** (optional) - For enhanced evaluation when available
+  - Automatically detected in common system paths
+  - Falls back to material evaluation if not found
+
+## Common Workflows
+
+### Running the Web Application
+```bash
+cd UI/chesswebapp
+python run_webapp.py
+# Or from root:
+python app.py
+```
+
+### Training ML Model
+```bash
+python Scripts/train_engine.py
+```
+
+### Running Tests
+```bash
+pytest Tests/
+# Or specific test:
+pytest Tests/test_engine.py
+```
+
+### Adding New Features
+
+1. **New Engine Feature**: Add to `Engine/` directory
+2. **New UI**: Add to `UI/` directory
+3. **New API Endpoint**: Add to `API/endpoints.py`
+4. **New Script**: Add to `Scripts/` directory
+5. **Tests**: Add corresponding test in `Tests/`
+
+## Important Notes
+
+### Evaluation Hierarchy
+1. **Enhanced Engine**: ML model (70%) + Material (30%) - if model available
+2. **Basic Engine**: Material evaluation only
+3. **Position Evaluator**: Stockfish (if available) → Material fallback
+
+### State Management
+- **Never use global board state in Flask app** - create per-request instances
+- **API endpoints** use shared board instance - ensure proper reset
+- **GUI applications** maintain their own board instances
+
+### File Naming
+- Use `chess_suggester.py` (not `move_suggestion.py`) - the latter is deprecated
+- Import `ChessSuggester` from `Engine.chess_suggester`
+
+### Redundancies to Avoid
+- Don't create duplicate classes (`ChessSuggester` vs `MoveSuggester`)
+- Don't create duplicate endpoints (`/suggest` vs `/analyze`)
+- Remove unused imports and variables
+
+## Testing Guidelines
+
+- Write tests for all engine components
+- Test both success and error cases
+- Use `chess.Board()` for test fixtures
+- Mock external dependencies (Stockfish) when testing
+
+## Deployment
+
+- **Vercel**: Uses `wsgi.py` as entry point (see `vercel.json`)
+- **Local**: Use `gunicorn` or Flask development server
+- **Docker**: Can be containerized using `requirements.txt`
+
+## Code Quality
+
+- Follow PEP 8 style guide
+- Use type hints where appropriate
+- Document complex algorithms
+- Keep functions focused and single-purpose
+- Remove unused code and imports regularly

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify
 import chess
 import os
 import sys
@@ -10,9 +10,8 @@ app = Flask(__name__,
            static_folder='UI/chesswebapp/static',
            template_folder='UI/chesswebapp/templates')
 
-# Initialize board and chess suggester
-# Note: In production, these should be per-request instances to avoid state issues
-board = chess.Board()
+# Initialize chess suggester (stateless, safe to use globally)
+# Note: Each endpoint creates its own board instance from FEN to avoid state issues
 chess_suggester = ChessSuggester()
 
 # CORS headers for frontend
@@ -80,22 +79,6 @@ def suggest_moves():
         suggestions = chess_suggester.get_move_suggestions(temp_board)
         
         return jsonify(suggestions)
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
-
-@app.route('/analyze', methods=['POST'])
-def analyze_position():
-    try:
-        if not request.is_json or request.json is None:
-            return jsonify({'status': 'error', 'message': 'Invalid or missing JSON'}), 400
-        
-        fen = request.json.get('fen', 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
-        
-        temp_board = chess.Board(fen)
-        
-        analysis = chess_suggester.get_move_suggestions(temp_board)
-        
-        return jsonify(analysis)
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 

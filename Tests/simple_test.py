@@ -1,13 +1,13 @@
 import chess
 import sys
 import os
-from Engine.move_suggestion import MoveSuggester
+from Engine.chess_suggester import ChessSuggester
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def main():
     board = chess.Board()
-    suggester = MoveSuggester()
+    suggester = ChessSuggester()
     suggestions = suggester.get_move_suggestions(board)
     
     print(f"Current evaluation: {suggestions['current_evaluation']:.2f}")
