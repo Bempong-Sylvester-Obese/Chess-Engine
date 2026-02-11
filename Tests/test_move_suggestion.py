@@ -1,9 +1,9 @@
 import chess
-from Engine.move_suggestion import MoveSuggester
+from Engine.chess_suggester import ChessSuggester
 
 def main():
     board = chess.Board()
-    suggester = MoveSuggester()
+    suggester = ChessSuggester()
     suggestions = suggester.get_move_suggestions(board)
     
     print(f"Current evaluation: {suggestions['current_evaluation']:.2f}")

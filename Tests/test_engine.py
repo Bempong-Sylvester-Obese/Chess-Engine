@@ -6,7 +6,6 @@ import sys
 import os
 from Engine.chess_suggester import ChessSuggester
 from Engine.evaluation import evaluate_position
-from Engine.move_suggestion import MoveSuggester
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -15,7 +14,7 @@ class TestChessEngine(unittest.TestCase):
     def setUp(self):
         self.board = chess.Board()
         self.suggester = ChessSuggester()
-        self.move_suggester = MoveSuggester()
+        self.move_suggester = ChessSuggester()
         
         try:
             self.training_data = pd.read_csv('Data/training_data.csv', nrows=100)

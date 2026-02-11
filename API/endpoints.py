@@ -51,5 +51,5 @@ async def get_best_move_endpoint(depth: int = 15):
 
 @router.post("/reset")
 async def reset_game():
-    board = Board()
+    board.reset()
     return {"status": "success", "fen": board.get_fen()}

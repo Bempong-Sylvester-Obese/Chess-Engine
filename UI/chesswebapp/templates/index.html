@@ -187,8 +187,7 @@
                     return moveResult;
                 },
                 onSnapEnd: function() {
-                    // Only update position if the game state has changed
-                    board.position(game.fen());
+                    // Position is already updated by makeMove() - no need to update here
                 },
                 onLoad: function() {
                     console.log('Chessboard loaded successfully');
@@ -318,12 +317,8 @@
             if (move) {
                 // Remove any existing highlights
                 removeHighlights();
-                // Make the move using the new signature
-                const moveResult = makeMove(move.from, move.to, null);
-                if (moveResult) {
-                    // Update board position
-                    board.position(game.fen());
-                }
+                // Make the move - makeMove() already updates the board position
+                makeMove(move.from, move.to, null);
             }
         }
 

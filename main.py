@@ -2,8 +2,8 @@ import chess
 import pygame
 import sys
 import os
-from typing import Optional, List, Tuple, cast, Literal
-from PIL import Image, ImageDraw
+from typing import Optional, List, Tuple
+from PIL import Image
 import pathlib
 from Engine.enhanced_engine import EnhancedChessSuggester
 from Engine.chess_suggester import ChessSuggester
