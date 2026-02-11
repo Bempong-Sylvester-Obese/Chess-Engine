@@ -17,21 +17,21 @@
         <header class="app-header">
             <div class="header-content">
                 <div class="logo">
-                    <h1>Chess Engine</h1>
+                    <span class="logo-main">Chess</span>
+                    <span class="logo-sub">Engine</span>
                 </div>
-                <div class="header-controls">
-                    <button class="btn btn-primary" onclick="resetGame()">
-                        New Game
-                    </button>
-                    <button class="btn btn-secondary" onclick="flipBoard()">
-                        Flip Board
-                    </button>
-                </div>
+                <nav class="header-nav">
+                    <button class="nav-link" onclick="resetGame()">New Game</button>
+                    <button class="nav-link" onclick="flipBoard()">Flip Board</button>
+                </nav>
             </div>
         </header>
 
         <!-- Main Content -->
         <main class="main-content">
+            <div class="hero-intro">
+                <p class="hero-tagline">Play chess with AI-powered analysis.</p>
+            </div>
             <div class="game-layout">
                 <!-- Left Panel - Chess Board -->
                 <div class="board-panel">
@@ -57,7 +57,7 @@
                 <!-- Right Panel - Analysis -->
                 <div class="analysis-panel">
                     <!-- Position Analysis -->
-                    <div class="analysis-section">
+                    <div id="analysis" class="analysis-section">
                         <h3>Analysis</h3>
                         <div class="evaluation-container">
                             <div class="eval-bar">
@@ -94,7 +94,7 @@
                     </div>
 
                     <!-- Move History -->
-                    <div class="analysis-section">
+                    <div id="move-history" class="analysis-section">
                         <h3>Move History</h3>
                         <div id="move-history" class="move-history">
                             <div class="history-placeholder">
@@ -105,6 +105,24 @@
                 </div>
             </div>
         </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-main">
+                <span class="footer-copy">© 2025 Chess Engine</span>
+                <nav class="footer-links">
+                    <a href="#analysis" class="footer-link">Analysis</a>
+                    <a href="#move-history" class="footer-link">Move History</a>
+                    <button type="button" class="footer-link footer-link-btn" onclick="resetGame()">New Game</button>
+                </nav>
+            </div>
+            <div class="footer-info">
+                <div class="footer-section">
+                    <span class="footer-label">Engine</span>
+                    <span class="footer-desc">AI-powered move suggestions and position evaluation</span>
+                </div>
+            </div>
+        </footer>
 
         <!-- Notifications Container -->
         <div id="notifications" class="notifications-container"></div>
