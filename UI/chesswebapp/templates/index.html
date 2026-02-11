@@ -238,8 +238,6 @@
         function makeMove(source, target, oldPos) {
             if (isGameOver) return false;
 
-            // Validate move before attempting
-            const moveString = source + target;
             const moveResult = game.move({
                 from: source,
                 to: target,
